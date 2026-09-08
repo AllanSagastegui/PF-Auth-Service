@@ -1,0 +1,89 @@
+name: "Pipeline • Docker & Compose Validation"
+
+run-name: "Docker Pipeline • ${{ github.event.pull_request.title || github.ref_name }}"
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+  workflow_dispatch:
+
+concurrency:
+  group: docker-pipeline-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docker-compose-test:
+    name: "Build Image & Validate Compose"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Prepare Environment File
+        run: |
+          if [ ! -f "devops/.env" ]; then
+            echo "Copying devops/.env.example to devops/.env"
+            cp devops/.env.example devops/.env
+          fi
+
+      - name: Build Auth Service Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: devops/Dockerfile
+          load: true
+          tags: auth-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Start Services with Docker Compose
+        run: |
+          docker compose -f devops/docker-compose.yml up -d
+          docker compose -f devops/docker-compose.yml ps
+
+      - name: Wait for Services to become Healthy
+        run: |
+          echo "Waiting for all containers to report healthy status..."
+          TIMEOUT=120
+          ELAPSED=0
+          
+          while [ $ELAPSED -lt $TIMEOUT ]; do
+            STATUS=$(docker compose -f devops/docker-compose.yml ps --format json | grep -v '"Health":"healthy"' || true)
+            if [ -z "$STATUS" ]; then
+              echo "All containers are healthy!"
+              break
+            fi
+            echo "Containers still starting... ($ELAPSED/$TIMEOUT seconds)"
+            sleep 5
+            ELAPSED=$((ELAPSED + 5))
+          done
+          
+          docker compose -f devops/docker-compose.yml ps
+
+      - name: Verify Microservice OpenAPI & Endpoints
+        run: |
+          echo "Testing OpenAPI documentation endpoint..."
+          curl --fail --retry 10 --retry-delay 3 --retry-all-errors -s -i http://localhost:9090/v3/api-docs | grep "Ask Auth Service API"
+          echo "Endpoint verified successfully!"
+
+      - name: Dump Container Logs on Failure
+        if: failure()
+        run: |
+          echo "=== Docker Compose Logs ==="
+          docker compose -f devops/docker-compose.yml logs --tail=200
+
+      - name: Teardown Docker Compose
+        if: always()
+        run: |
+          docker compose -f devops/docker-compose.yml down -v

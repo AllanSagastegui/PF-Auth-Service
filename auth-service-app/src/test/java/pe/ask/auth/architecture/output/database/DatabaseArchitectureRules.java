@@ -131,7 +131,7 @@ public final class DatabaseArchitectureRules {
                     .allowEmptyShould(true);
 
     /**
-     * Y todo lo ubicado en entity debe llamarse Entity.
+     * Cada clase ubicada en entity debe llamarse Entity.
      */
     @ArchTest
     static final ArchRule PERSISTENCE_ENTITY_CLASSES_MUST_END_WITH_ENTITY =

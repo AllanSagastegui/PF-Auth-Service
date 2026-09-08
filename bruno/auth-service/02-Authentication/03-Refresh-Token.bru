@@ -1,0 +1,56 @@
+meta {
+  name: Refresh Token
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/refresh
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  Idempotency-Key: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+  X-Correlation-Id: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+  X-Request-Id: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+  X-Forwarded-For: 192.168.1.50
+}
+
+body:json {
+  {
+    "refreshToken": "{{refreshToken}}",
+    "deviceId": "{{deviceId}}"
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  
+  if (!body?.success) {
+    throw new Error("Refresh response indicates an unsuccessful operation");
+  }
+  
+  const tokens = body?.data;
+  
+  if (!tokens) {
+    throw new Error("Refresh response does not contain data");
+  }
+  
+  if (!tokens.accessToken) {
+    throw new Error("Refresh response does not contain accessToken");
+  }
+  
+  if (!tokens.refreshToken) {
+    throw new Error("Refresh response does not contain refreshToken");
+  }
+  
+  bru.setVar("accessToken", tokens.accessToken);
+  bru.setVar("refreshToken", tokens.refreshToken);
+  bru.setVar("tokenType", tokens.tokenType || "Bearer");
+  bru.setVar("expiresIn", tokens.expiresIn);
+  
+  console.log("Authentication tokens rotated successfully");
+}

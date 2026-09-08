@@ -23,6 +23,7 @@ public final class AuthJwksHandler {
         this(jwksPort, AuthApiMapper.INSTANCE);
     }
 
+    @SuppressWarnings("java:S1172")
     public Mono<ServerResponse> getJwks(ServerRequest request) {
         return jwksPort.getJwks(mapper.toGetJwksCommand())
                 .map(mapper::toJwksResponse)

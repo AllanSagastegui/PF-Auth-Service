@@ -1,0 +1,15 @@
+meta {
+  name: Get OpenAPI v3 Docs
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/v3/api-docs
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}

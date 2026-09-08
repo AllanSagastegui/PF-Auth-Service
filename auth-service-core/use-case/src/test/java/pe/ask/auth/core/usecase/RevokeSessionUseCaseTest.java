@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -83,6 +82,6 @@ class RevokeSessionUseCaseTest {
                 .verifyComplete();
 
         verify(sessionRepository, never()).revokeById(sessionId);
-        verify(refreshTokenRepository, never()).revokeBySessionId(eq(sessionId), any());
+        verify(refreshTokenRepository, never()).revokeBySessionId(any(), any());
     }
 }

@@ -28,9 +28,9 @@ dependencies {
     implementation(libs.spring.boot.starter.webflux)
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.spring.boot.starter.data.r2dbc)
-    implementation("io.projectreactor.kafka:reactor-kafka:1.3.23")
-    implementation("com.nimbusds:nimbus-jose-jwt:9.48")
-    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:3.1.1")
+    implementation(libs.reactor.kafka)
+    implementation(libs.nimbus.jose.jwt)
+    implementation(libs.springdoc.openapi)
 
     implementation(project(":core:model"))
     implementation(project(":core:port"))
@@ -42,6 +42,8 @@ dependencies {
     implementation(project(":output:database"))
     implementation(project(":output:kafka-producer"))
     implementation(project(":output:security"))
+
+    testImplementation(libs.ask.persistence.core)
 }
 
 val bootJarTask = tasks.named<BootJar>("bootJar")

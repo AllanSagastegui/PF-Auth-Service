@@ -50,6 +50,7 @@ public final class RegisterUserUseCase implements RegisterUserInputPort {
     private final ClockOutputPort clockPort;
     private final IdGeneratorOutputPort idGenerator;
 
+    @SuppressWarnings("java:S107")
     public RegisterUserUseCase(
             UserRepositoryOutputPort userRepository,
             OneTimeTokenRepositoryOutputPort oneTimeTokenRepository,

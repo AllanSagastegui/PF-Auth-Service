@@ -3,9 +3,7 @@ package pe.ask.auth.core.usecase;
 import pe.ask.auth.core.model.RefreshToken;
 import pe.ask.auth.core.model.RefreshTokenStatus;
 import pe.ask.auth.core.model.Session;
-import pe.ask.auth.core.model.User;
 import pe.ask.auth.core.model.UserStatus;
-import pe.ask.auth.core.model.constant.DomainConstants;
 import pe.ask.auth.core.model.exception.AccountDisabledException;
 import pe.ask.auth.core.model.exception.DomainValidation;
 import pe.ask.auth.core.model.exception.IdempotencyConflictException;
@@ -52,6 +50,7 @@ public final class RefreshTokenUseCase implements RefreshTokenInputPort {
     private final ClockOutputPort clockPort;
     private final IdGeneratorOutputPort idGenerator;
 
+    @SuppressWarnings("java:S107")
     public RefreshTokenUseCase(
             UserRepositoryOutputPort userRepository,
             SessionRepositoryOutputPort sessionRepository,
@@ -85,11 +84,11 @@ public final class RefreshTokenUseCase implements RefreshTokenInputPort {
                             String payloadHash = tokenHash + ":" + (command.requestBodyHash() != null ? command.requestBodyHash() : "");
 
                             return idempotencyPort.acquireLock(idempotencyCompositeKey, payloadHash, IDEMPOTENCY_WINDOW)
-                                    .flatMap(acquired -> !acquired
-                                            ? idempotencyPort.getCachedResponse(idempotencyCompositeKey)
+                                    .flatMap(acquired -> Boolean.TRUE.equals(acquired)
+                                            ? executeRefreshRotation(tokenHash, command, now, idempotencyCompositeKey)
+                                            : idempotencyPort.getCachedResponse(idempotencyCompositeKey)
                                                     .flatMap(this::deserializeCachedResponse)
-                                                    .switchIfEmpty(Mono.error(new IdempotencyConflictException()))
-                                            : executeRefreshRotation(tokenHash, command, now, idempotencyCompositeKey));
+                                                    .switchIfEmpty(Mono.error(new IdempotencyConflictException())));
                         }));
     }
 

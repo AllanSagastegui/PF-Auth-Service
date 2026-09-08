@@ -19,6 +19,7 @@ import reactor.core.publisher.Mono;
 
 import java.beans.FeatureDescriptor;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -31,15 +32,17 @@ public abstract class ReactiveOperationsHelperRepository<
     protected final R repository;
     protected final String idFieldName = DatabaseEnumEntity.FIELD_ID.value();
 
-    private final Class<D> domainClass;
-    private final Class<E> entityClass;
     private final EntityMapper<D, E> mapper;
 
     protected ReactiveOperationsHelperRepository(R repository, EntityMapper<D, E> mapper, Class<D> domainClass, Class<E> entityClass) {
         this.repository = repository;
-        this.domainClass = domainClass;
-        this.entityClass = entityClass;
-        this.mapper = mapper != null ? mapper : (domainClass != null && entityClass != null ? new GenericBeanMapper<>(domainClass, entityClass) : null);
+        if (mapper != null) {
+            this.mapper = mapper;
+        } else if (domainClass != null && entityClass != null) {
+            this.mapper = new GenericBeanMapper<>(domainClass, entityClass);
+        } else {
+            this.mapper = null;
+        }
     }
 
     protected ReactiveOperationsHelperRepository(R repository) {
@@ -113,10 +116,6 @@ public abstract class ReactiveOperationsHelperRepository<
         DomainValidation.requireNonNull(sortDirection, DatabaseEnumEntity.PARAM_SORT_DIRECTION.value());
 
         return Mono.fromCallable(() -> {
-            Sort sort = sortDirection.equalsIgnoreCase(DatabaseEnumEntity.ORDER_DESC.value())
-                    ? Sort.by(sortBy).descending()
-                    : Sort.by(sortBy).ascending();
-
             ExampleMatcher matcher = ExampleMatcher.matchingAll()
                     .withIgnoreNullValues()
                     .withIgnoreCase()
@@ -187,7 +186,7 @@ public abstract class ReactiveOperationsHelperRepository<
                 .flatMap(existingEntity -> Mono.fromCallable(() -> {
                     E patchEntity = toEntity(patchDomain);
                     copyNonNullProperties(patchEntity, existingEntity);
-                    existingEntity.setUpdatedAt(LocalDateTime.now());
+                    existingEntity.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
                     existingEntity.setNew(false);
                     return existingEntity;
                 }))
@@ -209,7 +208,7 @@ public abstract class ReactiveOperationsHelperRepository<
 
     protected E beforeSave(E entity) {
         DomainValidation.requireNonNull(entity, DatabaseEnumEntity.PARAM_ENTITY.value());
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         if (entity.getCreatedAt() == null) {
             entity.setCreatedAt(now);
             entity.setNew(true);

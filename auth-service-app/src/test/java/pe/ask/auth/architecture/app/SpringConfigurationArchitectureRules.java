@@ -155,7 +155,7 @@ public final class SpringConfigurationArchitectureRules {
     }
 
     /**
-     * Todo método @Bean debe estar dentro de config.
+     * Cada método @Bean debe estar dentro de config.
      *
      * AuthApplication no debe contener métodos @Bean.
      * Input y output tampoco deben declarar configuraciones.

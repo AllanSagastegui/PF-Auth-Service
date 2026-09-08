@@ -131,8 +131,9 @@ public final class WebFluxErrorConfiguration {
             return unauthEx.getTitle();
         }
         if (ex instanceof ResponseStatusException rse) {
-            return HttpStatus.resolve(rse.getStatusCode().value()) != null
-                    ? HttpStatus.resolve(rse.getStatusCode().value()).getReasonPhrase()
+            HttpStatus resolved = HttpStatus.resolve(rse.getStatusCode().value());
+            return resolved != null
+                    ? resolved.getReasonPhrase()
                     : ApiMessageEnum.TITLE_INTERNAL_SERVER_ERROR.value();
         }
         return ApiMessageEnum.TITLE_INTERNAL_SERVER_ERROR.value();

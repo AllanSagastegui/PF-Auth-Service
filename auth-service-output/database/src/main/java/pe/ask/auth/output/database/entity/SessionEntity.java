@@ -28,6 +28,7 @@ public final class SessionEntity implements Persistable<UUID> {
     public SessionEntity() {
     }
 
+    @SuppressWarnings("java:S107")
     public SessionEntity(
             UUID id,
             UUID userId,

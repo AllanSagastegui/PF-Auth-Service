@@ -3,5 +3,5 @@ dependencies {
 
     implementation(libs.spring.boot.starter.webflux)
     implementation(libs.spring.boot.starter.validation)
-    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:3.1.1")
+    implementation(libs.springdoc.openapi)
 }

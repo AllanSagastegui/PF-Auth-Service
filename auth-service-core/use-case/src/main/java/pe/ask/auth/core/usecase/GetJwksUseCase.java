@@ -9,8 +9,6 @@ import pe.ask.auth.core.port.out.JwksOutputPort;
 import pe.ask.auth.core.usecase.annotation.UseCase;
 import reactor.core.publisher.Mono;
 
-import java.util.stream.Collectors;
-
 @UseCase
 public final class GetJwksUseCase implements GetJwksInputPort {
 
@@ -26,7 +24,7 @@ public final class GetJwksUseCase implements GetJwksInputPort {
                 .map(keys -> new GetJwksResult(
                         keys.stream()
                                 .map(k -> new JwksKeyResult(k.kty(), k.crv(), k.kid(), k.use(), k.alg(), k.x(), k.y()))
-                                .collect(Collectors.toList())
+                                .toList()
                 ));
     }
 }

@@ -30,6 +30,7 @@ public final class RefreshTokenEntity implements Persistable<UUID> {
     public RefreshTokenEntity() {
     }
 
+    @SuppressWarnings("java:S107")
     public RefreshTokenEntity(
             UUID id,
             UUID sessionId,

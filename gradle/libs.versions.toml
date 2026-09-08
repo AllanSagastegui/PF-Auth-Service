@@ -9,6 +9,10 @@ ask-exceptions-core-v = "1.0.3"
 ask-persistence-core-v = "1.0.4"
 mapstruct = "1.6.3"
 lombok-mapstruct-binding = "0.2.0"
+reactor-kafka = "1.3.23"
+springdoc-openapi = "3.1.1"
+nimbus-jose-jwt = "10.0.2"
+bouncycastle = "1.80"
 
 [libraries]
 spring-boot-dependencies = { group = "org.springframework.boot", name = "spring-boot-dependencies", version.ref = "spring-boot" }
@@ -33,12 +37,18 @@ lombok-mapstruct-binding = { group = "org.projectlombok", name = "lombok-mapstru
 reactor-core = { group = "io.projectreactor", name = "reactor-core" }
 reactor-extra = { group = "io.projectreactor.addons", name = "reactor-extra" }
 reactor-test = { group = "io.projectreactor", name = "reactor-test" }
+reactor-kafka = { group = "io.projectreactor.kafka", name = "reactor-kafka", version.ref = "reactor-kafka" }
 
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core" }
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind" }
 jackson-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310" }
 
 slf4j-api = { group = "org.slf4j", name = "slf4j-api" }
+
+springdoc-openapi = { group = "org.springdoc", name = "springdoc-openapi-starter-webflux-ui", version.ref = "springdoc-openapi" }
+nimbus-jose-jwt = { group = "com.nimbusds", name = "nimbus-jose-jwt", version.ref = "nimbus-jose-jwt" }
+bouncycastle = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
+spring-security-crypto = { group = "org.springframework.security", name = "spring-security-crypto" }
 
 spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test" }
 junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }

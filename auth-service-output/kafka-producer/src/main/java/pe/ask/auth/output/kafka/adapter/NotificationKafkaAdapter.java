@@ -63,14 +63,14 @@ public final class NotificationKafkaAdapter implements NotificationOutputPort {
                     ? ctx.get(KafkaProducerEnumMessage.CONTEXT_REQUEST_ID.value())
                     : generateSafeUuid();
 
-            ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, payload);
-            record.headers().add(KafkaProducerEnumMessage.HEADER_CORRELATION_ID.value(), correlationId.getBytes(StandardCharsets.UTF_8));
-            record.headers().add(KafkaProducerEnumMessage.HEADER_REQUEST_ID.value(), requestId.getBytes(StandardCharsets.UTF_8));
-            record.headers().add(KafkaProducerEnumMessage.HEADER_TRACE_ID.value(), correlationId.getBytes(StandardCharsets.UTF_8));
-            record.headers().add(KafkaProducerEnumMessage.HEADER_EVENT_TYPE.value(), eventType.getBytes(StandardCharsets.UTF_8));
-            record.headers().add(KafkaProducerEnumMessage.HEADER_TIMESTAMP.value(), String.valueOf(Instant.now().toEpochMilli()).getBytes(StandardCharsets.UTF_8));
+            ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, key, payload);
+            producerRecord.headers().add(KafkaProducerEnumMessage.HEADER_CORRELATION_ID.value(), correlationId.getBytes(StandardCharsets.UTF_8));
+            producerRecord.headers().add(KafkaProducerEnumMessage.HEADER_REQUEST_ID.value(), requestId.getBytes(StandardCharsets.UTF_8));
+            producerRecord.headers().add(KafkaProducerEnumMessage.HEADER_TRACE_ID.value(), correlationId.getBytes(StandardCharsets.UTF_8));
+            producerRecord.headers().add(KafkaProducerEnumMessage.HEADER_EVENT_TYPE.value(), eventType.getBytes(StandardCharsets.UTF_8));
+            producerRecord.headers().add(KafkaProducerEnumMessage.HEADER_TIMESTAMP.value(), String.valueOf(Instant.now().toEpochMilli()).getBytes(StandardCharsets.UTF_8));
 
-            SenderRecord<String, String, Void> senderRecord = SenderRecord.create(record, null);
+            SenderRecord<String, String, Void> senderRecord = SenderRecord.create(producerRecord, null);
             return kafkaSender.send(Mono.just(senderRecord)).then();
         });
     }

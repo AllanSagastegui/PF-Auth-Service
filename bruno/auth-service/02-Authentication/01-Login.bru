@@ -1,0 +1,80 @@
+meta {
+  name: Login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  X-Correlation-Id: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+  X-Request-Id: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+  X-Forwarded-For: 192.168.1.50
+}
+
+body:json {
+  {
+    "email": "allxn.sxh@gmail.com",
+    "password": "Sagas/Ask12345@",
+    "deviceId": "{{deviceId}}"
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  
+  if (!body?.success) {
+    throw new Error("Login response indicates an unsuccessful authentication");
+  }
+  
+  if (!body?.data) {
+    throw new Error("Login response does not contain data");
+  }
+  
+  const data = body.data;
+  
+  if (data.mfaRequired) {
+  
+    if (!data.mfaChallengeToken) {
+      throw new Error(
+        "MFA is required but the response does not contain mfaChallengeToken"
+      );
+    }
+  
+    bru.setVar("mfaRequired", true);
+    bru.setVar("mfaChallengeToken", data.mfaChallengeToken);
+  
+    console.log("MFA challenge required");
+  
+  } else {
+  
+    const tokens = data.tokens;
+  
+    if (!tokens) {
+      throw new Error("Login response does not contain tokens");
+    }
+  
+    if (!tokens.accessToken) {
+      throw new Error("Login response does not contain accessToken");
+    }
+  
+    if (!tokens.refreshToken) {
+      throw new Error("Login response does not contain refreshToken");
+    }
+  
+    bru.setVar("mfaRequired", false);
+  
+    bru.setVar("accessToken", tokens.accessToken);
+    bru.setVar("refreshToken", tokens.refreshToken);
+    bru.setVar("tokenType", tokens.tokenType || "Bearer");
+    bru.setVar("expiresIn", tokens.expiresIn);
+  
+    console.log("Authentication tokens loaded successfully");
+  }
+}

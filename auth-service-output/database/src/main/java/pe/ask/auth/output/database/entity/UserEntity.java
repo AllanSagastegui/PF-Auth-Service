@@ -27,6 +27,7 @@ public final class UserEntity extends Entity implements Persistable<UUID> {
     public UserEntity() {
     }
 
+    @SuppressWarnings("java:S107")
     public UserEntity(
             UUID id,
             String rawEmail,
@@ -154,6 +155,10 @@ public final class UserEntity extends Entity implements Persistable<UUID> {
         } else {
             setUpdatedAt(null);
         }
+    }
+
+    public boolean isNewRecord() {
+        return isNew();
     }
 
     public void setNewRecord(boolean newRecord) {

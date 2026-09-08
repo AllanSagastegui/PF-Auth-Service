@@ -18,16 +18,20 @@ public record AuthOpenApiProperties(
         String schemeDescription
 ) {
     public AuthOpenApiProperties {
-        title = (title != null && !title.isBlank()) ? title : OpenApiEnum.DEFAULT_TITLE.value();
-        description = (description != null && !description.isBlank()) ? description : OpenApiEnum.DEFAULT_DESCRIPTION.value();
-        version = (version != null && !version.isBlank()) ? version : OpenApiEnum.DEFAULT_VERSION.value();
-        contactName = (contactName != null && !contactName.isBlank()) ? contactName : OpenApiEnum.DEFAULT_CONTACT_NAME.value();
-        contactEmail = (contactEmail != null && !contactEmail.isBlank()) ? contactEmail : OpenApiEnum.DEFAULT_CONTACT_EMAIL.value();
-        licenseName = (licenseName != null && !licenseName.isBlank()) ? licenseName : OpenApiEnum.DEFAULT_LICENSE_NAME.value();
-        licenseUrl = (licenseUrl != null && !licenseUrl.isBlank()) ? licenseUrl : OpenApiEnum.DEFAULT_LICENSE_URL.value();
-        schemeBearer = (schemeBearer != null && !schemeBearer.isBlank()) ? schemeBearer : OpenApiEnum.DEFAULT_SCHEME_BEARER.value();
-        bearerFormat = (bearerFormat != null && !bearerFormat.isBlank()) ? bearerFormat : OpenApiEnum.DEFAULT_BEARER_FORMAT.value();
-        schemeNameBearer = (schemeNameBearer != null && !schemeNameBearer.isBlank()) ? schemeNameBearer : OpenApiEnum.DEFAULT_SCHEME_NAME_BEARER.value();
-        schemeDescription = (schemeDescription != null && !schemeDescription.isBlank()) ? schemeDescription : OpenApiEnum.DEFAULT_SCHEME_DESCRIPTION.value();
+        title = defaultIfBlank(title, OpenApiEnum.DEFAULT_TITLE);
+        description = defaultIfBlank(description, OpenApiEnum.DEFAULT_DESCRIPTION);
+        version = defaultIfBlank(version, OpenApiEnum.DEFAULT_VERSION);
+        contactName = defaultIfBlank(contactName, OpenApiEnum.DEFAULT_CONTACT_NAME);
+        contactEmail = defaultIfBlank(contactEmail, OpenApiEnum.DEFAULT_CONTACT_EMAIL);
+        licenseName = defaultIfBlank(licenseName, OpenApiEnum.DEFAULT_LICENSE_NAME);
+        licenseUrl = defaultIfBlank(licenseUrl, OpenApiEnum.DEFAULT_LICENSE_URL);
+        schemeBearer = defaultIfBlank(schemeBearer, OpenApiEnum.DEFAULT_SCHEME_BEARER);
+        bearerFormat = defaultIfBlank(bearerFormat, OpenApiEnum.DEFAULT_BEARER_FORMAT);
+        schemeNameBearer = defaultIfBlank(schemeNameBearer, OpenApiEnum.DEFAULT_SCHEME_NAME_BEARER);
+        schemeDescription = defaultIfBlank(schemeDescription, OpenApiEnum.DEFAULT_SCHEME_DESCRIPTION);
+    }
+
+    private static String defaultIfBlank(String value, OpenApiEnum fallback) {
+        return (value != null && !value.isBlank()) ? value : fallback.value();
     }
 }
