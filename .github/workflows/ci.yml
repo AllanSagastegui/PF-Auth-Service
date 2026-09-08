@@ -1,0 +1,98 @@
+name: "CI • Quality Gate"
+
+run-name: "CI • ${{ github.event.pull_request.title || github.ref_name }}"
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+  push:
+    branches:
+      - main
+      - dev
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: "Build, Test & Quality"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    if: >
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set Up Java 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - name: Set Up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Run Tests & Quality Checks
+        run: |
+          ./gradlew clean check jacocoTestReport --stacktrace
+
+      - name: Publish JaCoCo Coverage
+        id: jacoco
+        if: github.event_name == 'pull_request'
+        uses: madrapps/jacoco-report@v1.8.0
+        with:
+          paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+          min-coverage-overall: 80
+          min-coverage-changed-lines: 80
+
+          title: "### Coverage • JaCoCo"
+          update-comment: true
+          comment-type: both
+
+      - name: Enforce Coverage Gate
+        if: >
+          github.event_name == 'pull_request' &&
+          (
+            steps.jacoco.outputs.coverage-overall < 80.0 ||
+            steps.jacoco.outputs.coverage-changed-lines < 80.0
+          )
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const overall = '${{ steps.jacoco.outputs.coverage-overall }}';
+            const changed = '${{ steps.jacoco.outputs.coverage-changed-lines }}';
+
+            core.setFailed(
+              `Coverage gate failed. Overall: ${overall}%, Changed lines: ${changed}%. Minimum required: 80%.`
+            );
+
+      - name: Upload Quality Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-reports-${{ github.run_number }}
+          path: |
+            build/reports/tests/
+            build/reports/jacoco/
+            build/reports/checkstyle/
+          if-no-files-found: ignore
+          retention-days: 7

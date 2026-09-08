@@ -1,0 +1,79 @@
+spring:
+  application:
+    name: auth-service
+
+  main:
+    web-application-type: reactive
+
+  sql:
+    init:
+      mode: never
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.r2dbc.autoconfigure.R2dbcInitializationAutoConfiguration
+
+server:
+  port: ${PORT:9090}
+
+app:
+  openapi:
+    title: ${OPENAPI_TITLE:Ask Auth Service API}
+    description: ${OPENAPI_DESCRIPTION:High-performance reactive authentication and authorization microservice using WebFlux, R2DBC, and Redis.}
+    version: ${OPENAPI_VERSION:v1}
+    contact-name: ${OPENAPI_CONTACT_NAME:Ask Engineering Team}
+    contact-email: ${OPENAPI_CONTACT_EMAIL:security@ask.pe}
+    license-name: ${OPENAPI_LICENSE_NAME:Apache 2.0}
+    license-url: ${OPENAPI_LICENSE_URL:https://www.apache.org/licenses/LICENSE-2.0}
+    scheme-bearer: ${OPENAPI_SCHEME_BEARER:bearerAuth}
+    bearer-format: ${OPENAPI_BEARER_FORMAT:JWT}
+    scheme-name-bearer: ${OPENAPI_SCHEME_NAME_BEARER:bearer}
+    scheme-description: ${OPENAPI_SCHEME_DESCRIPTION:JWT Bearer token for authorized requests}
+  security:
+    argon2:
+      salt-length: ${ARGON2_SALT_LENGTH:16}
+      hash-length: ${ARGON2_HASH_LENGTH:32}
+      parallelism: ${ARGON2_PARALLELISM:1}
+      memory-kib: ${ARGON2_MEMORY_KIB:19456}
+      iterations: ${ARGON2_ITERATIONS:2}
+      scheduler-threads: ${ARGON2_SCHEDULER_THREADS:4}
+      dummy-password: ${ARGON2_DUMMY_PASSWORD:dummy-password-for-anti-enumeration-timing}
+    jwt:
+      issuer: ${JWT_ISSUER:pe.ask.auth}
+      access-token-ttl: ${JWT_ACCESS_TOKEN_TTL:300s}
+      refresh-token-ttl: ${JWT_REFRESH_TOKEN_TTL:604800s}
+    totp:
+      issuer: ${TOTP_ISSUER:AskPlatform}
+      encryption-key-hex: ${TOTP_ENCRYPTION_KEY_HEX:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+    rate-limit:
+      max-requests: ${RATE_LIMIT_MAX_REQUESTS:100}
+      window: ${RATE_LIMIT_WINDOW:60s}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}
+    notifications-topic: ${KAFKA_TOPIC_NOTIFICATIONS:auth.notifications}
+    audit-topic: ${KAFKA_TOPIC_AUDIT:auth.audit}
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    display-request-duration: true
+    operations-sorter: method
+    tags-sorter: alpha
+
+pe.ask:
+  persistence:
+    primary: auth
+    databases:
+      auth:
+        enabled: true
+        host: ${AUTH_DB_HOST:localhost}
+        port: ${AUTH_DB_PORT:5430}
+        database: ${AUTH_DB_NAME:authdb}
+        schema: ${AUTH_DB_SCHEMA:public}
+        username: ${AUTH_DB_USERNAME:auth_app}
+        password: ${AUTH_DB_PASSWORD:auth_local_password}

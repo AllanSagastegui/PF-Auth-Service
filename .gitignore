@@ -1,0 +1,249 @@
+# Compiled classes
+*.class
+
+# Build outputs
+build/
+out/
+target/
+bin/
+
+# Agents
+.agents/
+
+docs/architecture
+
+# Graphify
+graphify-out
+
+# Packaged applications
+*.jar
+*.war
+*.ear
+
+# JVM crash logs
+hs_err_pid*
+replay_pid*
+
+# Java temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+.gradle/
+**/.gradle/
+
+# Gradle build cache
+.gradle-cache/
+
+# Local Gradle configuration
+gradle-local.properties
+
+# DO NOT IGNORE:
+# gradlew
+# gradlew.bat
+# gradle/wrapper/gradle-wrapper.jar
+# gradle/wrapper/gradle-wrapper.properties
+
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# IntelliJ generated files
+.idea_modules/
+cmake-build-*/
+atlassian-ide-plugin.xml
+
+.vscode/
+
+# Uncomment if you want to share recommended extensions/settings
+# !.vscode/
+# .vscode/*
+# !.vscode/extensions.json
+# !.vscode/settings.json
+
+.classpath
+.project
+.settings/
+.factorypath
+.springBeans
+.sts4-cache/
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS thumbnails
+._*
+
+# macOS metadata
+.Spotlight-V100
+.Trashes
+
+# macOS filesystem
+.fseventsd
+
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+*~
+.directory
+
+.env
+.env.*
+!.env.example
+!.env.template
+
+# Local environment files
+application-local.yml
+application-local.yaml
+application-local.properties
+
+application-secret.yml
+application-secret.yaml
+application-secret.properties
+
+application-secrets.yml
+application-secrets.yaml
+application-secrets.properties
+
+# Local Spring Boot configuration overrides
+src/main/resources/application-local.yml
+src/main/resources/application-local.yaml
+src/main/resources/application-local.properties
+
+src/test/resources/application-local.yml
+src/test/resources/application-local.yaml
+src/test/resources/application-local.properties
+
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Private keys
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+
+# Local secret directories
+secrets/
+.secret/
+.secrets/
+
+# Docker local overrides
+docker-compose.override.yml
+compose.override.yml
+
+# Local Docker data
+docker-data/
+.docker-data/
+
+# Container runtime files
+*.pid
+
+
+logs/
+log/
+
+# Spring Boot logs
+spring.log
+
+# Application-specific logs
+application.log
+error.log
+debug.log
+
+# JaCoCo
+jacoco.exec
+*.exec
+
+# Generic coverage
+coverage/
+.coverage/
+
+# Test reports generated outside build/
+test-results/
+reports/
+
+.scannerwork/
+.sonar/
+sonar-report.json
+
+.checkstyle-cache
+checkstyle-result.xml
+
+# SpotBugs
+spotbugsXml.xml
+spotbugs.html
+
+# PMD
+pmd.xml
+
+.spring-boot-devtools/
+
+*.db
+*.sqlite
+*.sqlite3
+
+# PostgreSQL local volumes
+pgdata/
+postgres-data/
+
+# Redis local volumes
+redis-data/
+
+# Kafka local volumes
+kafka-data/
+
+tmp/
+temp/
+.cache/
+.cache-loader/
+
+*.cache
+*.orig
+
+# Useful if the repository eventually contains frontend tooling,
+# Swagger tooling, documentation generators, etc.
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+.local/
+.tools/
+.tooling/
+
+# Cursor
+.cursor/
+
+# Windsurf
+.windsurf/
+
+# Local Copilot workspace data
+.copilot/
+
+# ============================================================
+# Misc
+# ============================================================
+
+*.patch
+*.diff
+
+# Backup files
+*.backup
+*.old
+
+# Local notes
+notes.local.md
+TODO.local.md

@@ -1,0 +1,149 @@
+name: "PR • Description"
+
+run-name: "PR #${{ github.event.pull_request.number }} • Generate Description"
+
+on:
+  pull_request:
+    types:
+      - opened
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  description:
+    name: "Generate PR Description"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Generate & Update PR Description
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          retries: 3
+          script: |
+            const pr = context.payload.pull_request;
+
+            const commits = await github.paginate(
+              github.rest.pulls.listCommits,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                per_page: 100
+              }
+            );
+
+            const commitHistory = commits
+              .map(commit => {
+                const sha = commit.sha.substring(0, 7);
+                const message = commit.commit.message.split('\n')[0];
+
+                return `* \`${sha}\` ${message}`;
+              })
+              .join('\n');
+
+            const body = `
+            # Pull Request: ${pr.title}
+
+            > "La calidad de un sistema empieza por la claridad de sus cambios."
+
+            ## Descripción Técnica
+
+            *¿Qué resolvimos y cómo lo hicimos?*
+
+            * **Contexto:** Describe el problema, necesidad técnica o requerimiento de negocio.
+            * **Implementación:** Explica brevemente la solución implementada y los componentes modificados.
+            * **Decisiones clave:** Documenta decisiones arquitectónicas o técnicas relevantes.
+
+            ---
+
+            ## Información del PR
+
+            | Campo | Valor |
+            |---|---|
+            | **Autor** | @${pr.user.login} |
+            | **Origen** | \`${pr.head.ref}\` |
+            | **Destino** | \`${pr.base.ref}\` |
+            | **Commits** | ${pr.commits} |
+            | **Archivos modificados** | ${pr.changed_files} |
+            | **Líneas agregadas** | +${pr.additions} |
+            | **Líneas eliminadas** | -${pr.deletions} |
+
+            ### Historial de Commits
+
+            ${commitHistory || '* Sin commits disponibles'}
+
+            ---
+
+            ## Tipo de Cambio
+
+            * [ ] **Feature** — Nueva funcionalidad
+            * [ ] **Bugfix** — Corrección de error
+            * [ ] **Hotfix** — Corrección crítica
+            * [ ] **Refactor** — Refactorización sin cambio funcional
+            * [ ] **Performance** — Mejora de rendimiento
+            * [ ] **Security** — Cambio relacionado con seguridad
+            * [ ] **Config** — Infraestructura, CI/CD o configuración
+            * [ ] **Dependencies** — Actualización de dependencias
+            * [ ] **Tests** — Tests o infraestructura de pruebas
+            * [ ] **Docs** — Documentación, README, Javadoc u OpenAPI
+
+            ---
+
+            ## Checklist de Calidad
+
+            * [ ] **Architecture:** Respeta las reglas y límites arquitectónicos definidos.
+            * [ ] **Clean Code:** El código mantiene nombres claros, responsabilidades cohesionadas y bajo acoplamiento.
+            * [ ] **Self Review:** Se realizó revisión del código antes de abrir el PR.
+            * [ ] **Testing:** Se agregaron o actualizaron tests.
+            * [ ] **Coverage:** La cobertura se mantiene o incrementa.
+            * [ ] **Static Analysis:** Checkstyle y demás validaciones pasan correctamente.
+            * [ ] **Security:** No se introducen secretos, credenciales o información sensible.
+            * [ ] **Observability:** Logs, métricas y trazas fueron considerados cuando corresponde.
+            * [ ] **Documentation:** OpenAPI y documentación fueron actualizados cuando corresponde.
+            * [ ] **Validation:** El cambio fue probado correctamente en entorno local o DEV.
+
+            ---
+
+            ## Consideraciones de Despliegue
+
+            * [ ] **Environment Variables:** Requiere nuevas variables de entorno.
+            * [ ] **Database Migration:** Requiere cambios de esquema o scripts SQL.
+            * [ ] **Kafka:** Agrega o modifica topics, producers, consumers o contratos.
+            * [ ] **Redis:** Modifica keys, TTLs o estructuras almacenadas.
+            * [ ] **API Contract:** Introduce cambios en endpoints o contratos.
+            * [ ] **Dependencies:** Depende de otro PR, servicio o componente.
+            * [ ] **Breaking Change:** Introduce cambios incompatibles.
+
+            ### Notas de despliegue
+
+            No aplica / Detallar aquí.
+
+            ---
+
+            ## Evidencia
+
+            Agregar cuando corresponda:
+
+            * Logs
+            * Screenshots
+            * Requests / Responses
+            * Resultados de pruebas
+            * Evidencia de performance
+
+            ---
+
+            *Powered by **Ask Architecture***
+            `;
+
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              body
+            });
+
+            core.info(`PR #${pr.number} description updated successfully.`);

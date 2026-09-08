@@ -1,0 +1,27 @@
+name: "Security • Dependency Review"
+
+run-name: "Security • PR #${{ github.event.pull_request.number }} • Dependencies"
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    name: "Review Dependencies"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Review Dependency Changes
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high

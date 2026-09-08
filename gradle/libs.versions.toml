@@ -1,0 +1,50 @@
+[versions]
+spring-boot = "4.1.0"
+spring-cloud = "2025.1.1"
+freefair-lombok = "9.5.0"
+blockhound = "1.0.13.RELEASE"
+archunit = "1.5.0"
+ask-core-v = "1.0.4"
+ask-exceptions-core-v = "1.0.3"
+ask-persistence-core-v = "1.0.4"
+mapstruct = "1.6.3"
+lombok-mapstruct-binding = "0.2.0"
+
+[libraries]
+spring-boot-dependencies = { group = "org.springframework.boot", name = "spring-boot-dependencies", version.ref = "spring-boot" }
+spring-cloud-dependencies = { group = "org.springframework.cloud", name = "spring-cloud-dependencies", version.ref = "spring-cloud" }
+
+spring-boot-starter = { group = "org.springframework.boot", name = "spring-boot-starter" }
+spring-boot-starter-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux" }
+spring-boot-starter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation" }
+spring-boot-starter-data-r2dbc = { group = "org.springframework.boot", name = "spring-boot-starter-data-r2dbc" }
+
+r2dbc-pool = { group = "io.r2dbc", name = "r2dbc-pool" }
+r2dbc-postgresql = { group = "org.postgresql", name = "r2dbc-postgresql" }
+
+ask-core = { group = "com.github.Ask-Library", name = "ask-core", version.ref = "ask-core-v" }
+ask-exception-core = { group = "com.github.Ask-Library", name = "ask-exception-core", version.ref = "ask-exceptions-core-v" }
+ask-persistence-core = { group = "com.github.Ask-Library", name = "ask-sql-persistence-core", version.ref = "ask-persistence-core-v" }
+
+mapstruct = { group = "org.mapstruct", name = "mapstruct", version.ref = "mapstruct" }
+mapstruct-processor = { group = "org.mapstruct", name = "mapstruct-processor", version.ref = "mapstruct" }
+lombok-mapstruct-binding = { group = "org.projectlombok", name = "lombok-mapstruct-binding", version.ref = "lombok-mapstruct-binding" }
+
+reactor-core = { group = "io.projectreactor", name = "reactor-core" }
+reactor-extra = { group = "io.projectreactor.addons", name = "reactor-extra" }
+reactor-test = { group = "io.projectreactor", name = "reactor-test" }
+
+jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core" }
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind" }
+jackson-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310" }
+
+slf4j-api = { group = "org.slf4j", name = "slf4j-api" }
+
+spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test" }
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
+blockhound-junit = { group = "io.projectreactor.tools", name = "blockhound-junit-platform", version.ref = "blockhound" }
+arch-unit = { group = "com.tngtech.archunit", name = "archunit-junit5", version.ref = "archunit" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+freefair-lombok = { id = "io.freefair.lombok", version.ref = "freefair-lombok" }

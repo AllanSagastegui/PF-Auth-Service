@@ -1,0 +1,21 @@
+estas reglas NO se negocian
+
+- Source of truth: docs/architecture/auth-service-spec.md
+- Java 21
+- Spring Boot 4.x
+- Gradle Kotlin DSL
+- Hexagonal architecture
+- core must not import Spring
+- WebFlux only
+- R2DBC only
+- Reactive Redis/Lettuce
+- WebClient
+- no JDBC/JPA/Hibernate/Hikari
+- no block()
+- no subscribe()
+- no Thread.sleep()
+- no RestTemplate
+- tests required
+- ArchUnit rules mandatory
+- never disable tests/gates to make build pass
+- fix failures and continue automatically

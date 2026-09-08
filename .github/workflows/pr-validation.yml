@@ -1,0 +1,39 @@
+name: "PR • Validation"
+
+run-name: "PR #${{ github.event.pull_request.number }} • Validate"
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+
+permissions:
+  contents: read
+
+jobs:
+  title:
+    name: "Validate PR Title"
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: Validate Conventional Title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          REGEX='^(feat|fix|hotfix|refactor|perf|test|docs|build|ci|chore|revert)(\([a-zA-Z0-9._-]+\))?!?: .+'
+
+          echo "Validating PR title:"
+          echo "${PR_TITLE}"
+
+          if [[ ! "${PR_TITLE}" =~ ${REGEX} ]]; then
+            echo "::error::Invalid PR title."
+            echo "::error::Expected: type(scope): description"
+            echo "::error::Example: feat(auth): implement refresh token rotation"
+            exit 1
+          fi
+
+          echo "PR title is valid."
