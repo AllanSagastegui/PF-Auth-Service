@@ -62,7 +62,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
           min-coverage-overall: 80
-          min-coverage-changed-lines: 80
+          min-coverage-changed-files: 80
 
           title: "### Coverage • JaCoCo"
           update-comment: true
@@ -73,13 +73,13 @@ jobs:
           github.event_name == 'pull_request' &&
           (
             steps.jacoco.outputs.coverage-overall < 80.0 ||
-            steps.jacoco.outputs.coverage-changed-lines < 80.0
+            steps.jacoco.outputs.coverage-changed-files < 80.0
           )
         uses: actions/github-script@v9
         with:
           script: |
             const overall = '${{ steps.jacoco.outputs.coverage-overall }}';
-            const changed = '${{ steps.jacoco.outputs.coverage-changed-lines }}';
+            const changed = '${{ steps.jacoco.outputs.coverage-changed-files }}';
 
             core.setFailed(
               `Coverage gate failed. Overall: ${overall}%, Changed lines: ${changed}%. Minimum required: 80%.`
