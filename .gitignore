@@ -43,11 +43,11 @@ replay_pid*
 # Local Gradle configuration
 gradle-local.properties
 
-# DO NOT IGNORE:
-# gradlew
-# gradlew.bat
-# gradle/wrapper/gradle-wrapper.jar
-# gradle/wrapper/gradle-wrapper.properties
+# Gradle Wrapper must always be committed
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
 
 .idea/
 *.iml
