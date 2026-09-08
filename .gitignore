@@ -3,7 +3,6 @@
 
 # Build outputs
 build/
-/out/
 /target/
 /bin/
 
