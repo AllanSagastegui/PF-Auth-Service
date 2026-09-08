@@ -7,9 +7,6 @@ out/
 target/
 bin/
 
-# SonarEnvs
-sonar.properties
-
 # Agents
 .agents/
 
@@ -152,7 +149,6 @@ docker-data/
 # Container runtime files
 *.pid
 
-
 logs/
 log/
 
@@ -235,10 +231,6 @@ pnpm-debug.log*
 
 # Local Copilot workspace data
 .copilot/
-
-# ============================================================
-# Misc
-# ============================================================
 
 *.patch
 *.diff
