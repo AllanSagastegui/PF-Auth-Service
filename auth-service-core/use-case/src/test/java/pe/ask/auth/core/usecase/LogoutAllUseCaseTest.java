@@ -22,7 +22,6 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,7 +55,7 @@ class LogoutAllUseCaseTest {
         User user = new User(userId, "user@example.com", "user@example.com", "hash", UserStatus.ACTIVE, Set.of(Role.ROLE_USER), 1L, false, null, now, now);
 
         when(clockPort.now()).thenReturn(Mono.just(now));
-        when(sessionRepository.revokeAllByUserId(eq(userId), eq(now))).thenReturn(Mono.empty());
+        when(sessionRepository.revokeAllByUserId(userId, now)).thenReturn(Mono.empty());
         when(userRepository.findById(userId)).thenReturn(Mono.just(user));
         when(userRepository.update(any(User.class))).thenReturn(Mono.just(user.incrementAuthVersion(now)));
 

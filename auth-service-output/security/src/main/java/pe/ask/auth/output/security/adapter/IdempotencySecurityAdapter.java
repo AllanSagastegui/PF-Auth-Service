@@ -36,8 +36,8 @@ public final class IdempotencySecurityAdapter implements IdempotencyOutputPort {
 
         return Mono.fromCallable(() -> {
             Instant now = Instant.now();
-            IdempotencyRecord record = storage.get(key);
-            if (record != null && record.expiresAt().isAfter(now) && record.value() instanceof String str) {
+            IdempotencyRecord entry = storage.get(key);
+            if (entry != null && entry.expiresAt().isAfter(now) && entry.value() instanceof String str) {
                 return str;
             }
             return null;

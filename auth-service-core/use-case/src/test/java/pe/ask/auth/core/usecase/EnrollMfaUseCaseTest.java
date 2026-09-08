@@ -24,7 +24,6 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -77,7 +76,7 @@ class EnrollMfaUseCaseTest {
         when(totpPort.generateSecret()).thenReturn(Mono.just("JBSWY3DPEHPK3PXP"));
         when(totpPort.encryptSecret("JBSWY3DPEHPK3PXP")).thenReturn(Mono.just("enc_secret"));
         when(tokenGenerator.generateSecureToken()).thenReturn(Mono.just("ABCDEFGHIJ1234567890"));
-        when(totpPort.generateTotpUri(eq("user@example.com"), eq("JBSWY3DPEHPK3PXP")))
+        when(totpPort.generateTotpUri("user@example.com", "JBSWY3DPEHPK3PXP"))
                 .thenReturn(Mono.just("otpauth://totp/Ask:user@example.com?secret=JBSWY3DPEHPK3PXP"));
         when(userRepository.update(any())).thenReturn(Mono.just(user.enableMfa("enc_secret", now)));
 

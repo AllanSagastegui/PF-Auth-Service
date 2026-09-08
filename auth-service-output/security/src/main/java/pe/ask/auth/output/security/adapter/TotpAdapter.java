@@ -138,7 +138,7 @@ public final class TotpAdapter implements TotpOutputPort {
                 | (hash[offset + 3] & 0xFF);
 
         int otp = binary % (int) Math.pow(10, SecurityIntEnum.TOTP_CODE_DIGITS.value());
-        return String.format("%0" + SecurityIntEnum.TOTP_CODE_DIGITS.value() + "d", otp);
+        return String.format("%06d", otp);
     }
 
     private static String encodeBase32(byte[] data) {

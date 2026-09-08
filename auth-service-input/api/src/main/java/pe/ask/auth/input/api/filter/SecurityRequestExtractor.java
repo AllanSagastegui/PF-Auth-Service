@@ -19,26 +19,9 @@ public final class SecurityRequestExtractor {
     public static UUID extractUserId(ServerRequest request) {
         ApiValidation.requireNonNull(request, ApiMessageEnum.PARAM_ARGUMENT.value());
 
-        String authHeader = request.headers().firstHeader(ApiHeaderEnum.AUTHORIZATION.value());
-        if (authHeader != null && authHeader.regionMatches(true, 0, ApiHeaderEnum.BEARER_PREFIX.value(), 0, ApiHeaderEnum.BEARER_PREFIX.value().length())) {
-            String token = authHeader.substring(ApiHeaderEnum.BEARER_PREFIX.value().length()).trim();
-            String[] parts = token.split(DOT_REGEX);
-            if (parts.length >= 2) {
-                try {
-                    byte[] decoded = Base64.getUrlDecoder().decode(parts[1]);
-                    String json = new String(decoded, StandardCharsets.UTF_8);
-                    int subIndex = json.indexOf(JSON_SUB_KEY);
-                    if (subIndex != -1) {
-                        int start = subIndex + JSON_SUB_KEY.length();
-                        int end = json.indexOf(QUOTE, start);
-                        if (end != -1) {
-                            return UUID.fromString(json.substring(start, end));
-                        }
-                    }
-                } catch (IllegalArgumentException | IndexOutOfBoundsException ignored) {
-                    // Fallthrough to X-User-Id header or reject
-                }
-            }
+        UUID fromJwt = extractUserIdFromJwt(request.headers().firstHeader(ApiHeaderEnum.AUTHORIZATION.value()));
+        if (fromJwt != null) {
+            return fromJwt;
         }
 
         String userIdHeader = request.headers().firstHeader(ApiHeaderEnum.USER_ID.value());
@@ -51,5 +34,31 @@ public final class SecurityRequestExtractor {
         }
 
         throw new ApiUnauthorizedException(ApiMessageEnum.AUTHENTICATION_REQUIRED.value());
+    }
+
+    private static UUID extractUserIdFromJwt(String authHeader) {
+        if (authHeader == null || !authHeader.regionMatches(true, 0, ApiHeaderEnum.BEARER_PREFIX.value(), 0, ApiHeaderEnum.BEARER_PREFIX.value().length())) {
+            return null;
+        }
+        String token = authHeader.substring(ApiHeaderEnum.BEARER_PREFIX.value().length()).trim();
+        String[] parts = token.split(DOT_REGEX);
+        if (parts.length < 2) {
+            return null;
+        }
+        try {
+            byte[] decoded = Base64.getUrlDecoder().decode(parts[1]);
+            String json = new String(decoded, StandardCharsets.UTF_8);
+            int subIndex = json.indexOf(JSON_SUB_KEY);
+            if (subIndex != -1) {
+                int start = subIndex + JSON_SUB_KEY.length();
+                int end = json.indexOf(QUOTE, start);
+                if (end != -1) {
+                    return UUID.fromString(json.substring(start, end));
+                }
+            }
+        } catch (IllegalArgumentException | IndexOutOfBoundsException ignored) {
+            // Fallthrough to X-User-Id header or reject
+        }
+        return null;
     }
 }

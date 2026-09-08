@@ -16,8 +16,4 @@ public final class DatabaseOperationException extends BaseException {
     public DatabaseOperationException(String message) {
         this(message, null);
     }
-
-    public static boolean isRetryable(Throwable throwable) {
-        return false;
-    }
 }

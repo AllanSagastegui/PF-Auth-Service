@@ -71,10 +71,10 @@ public enum DatabaseEnumEntity {
     PARAM_ENTITY("entity"),
     PARAM_REPOSITORY("repository"),
     PARAM_TOKEN_HASH("tokenHash"),
-    PARAM_REFRESH_TOKEN("token"),
+    PARAM_REFRESH_TOKEN("refreshToken"),
     PARAM_FAMILY_ID("familyId"),
     PARAM_CANONICAL_EMAIL("canonicalEmail"),
-    PARAM_ONE_TIME_TOKEN("token"),
+    PARAM_ONE_TIME_TOKEN("oneTimeToken"),
     PARAM_OUTBOX_EVENT("message"),
     PARAM_NOW("now");
 

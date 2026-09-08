@@ -30,7 +30,6 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -127,7 +126,7 @@ class RegisterUserUseCaseTest {
         );
         when(userRepository.save(any(User.class))).thenReturn(Mono.just(savedUser));
         when(oneTimeTokenRepository.save(any())).thenReturn(Mono.empty());
-        when(notificationPort.sendVerificationEmail(eq("User@Example.com"), eq("raw_verification_token"))).thenReturn(Mono.empty());
+        when(notificationPort.sendVerificationEmail("User@Example.com", "raw_verification_token")).thenReturn(Mono.empty());
         when(outboxRepository.save(any(OutboxMessage.class))).thenReturn(Mono.empty());
 
         StepVerifier.create(useCase.register(cmd))

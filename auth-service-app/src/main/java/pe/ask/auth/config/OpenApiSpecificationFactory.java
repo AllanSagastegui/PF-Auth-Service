@@ -24,9 +24,44 @@ import pe.ask.auth.config.model.OpenApiOperationEnum;
 
 import java.util.List;
 
+@SuppressWarnings({"java:S1192", "java:S1313", "java:S6418"})
 public final class OpenApiSpecificationFactory {
 
     private static final String FORMAT_DATE_TIME = "date-time";
+    private static final String SCHEMA_API_ERROR_RESPONSE = "ApiErrorResponse";
+    private static final String SCHEMA_TOKEN_RESPONSE = "TokenResponse";
+    private static final String SCHEMA_TOKEN_API_RESPONSE = "TokenApiResponse";
+    private static final String SCHEMA_MESSAGE_API_RESPONSE = "MessageApiResponse";
+    private static final String SCHEMA_REGISTER_REQUEST = "RegisterRequest";
+    private static final String SCHEMA_EMAIL_VERIFY_REQUEST = "EmailVerificationRequest";
+    private static final String SCHEMA_EMAIL_VERIFY_CONFIRM_REQUEST = "EmailVerificationConfirmRequest";
+    private static final String SCHEMA_LOGIN_REQUEST = "LoginRequest";
+    private static final String SCHEMA_VERIFY_MFA_REQUEST = "VerifyMfaRequest";
+    private static final String SCHEMA_REFRESH_TOKEN_REQUEST = "RefreshTokenRequest";
+    private static final String SCHEMA_LOGOUT_REQUEST = "LogoutRequest";
+    private static final String SCHEMA_FORGOT_PASSWORD_REQUEST = "ForgotPasswordRequest";
+    private static final String SCHEMA_RESET_PASSWORD_REQUEST = "ResetPasswordRequest";
+    private static final String SCHEMA_CHANGE_PASSWORD_REQUEST = "ChangePasswordRequest";
+    private static final String SCHEMA_CONFIRM_MFA_REQUEST = "ConfirmMfaRequest";
+    private static final String SCHEMA_DISABLE_MFA_REQUEST = "DisableMfaRequest";
+    private static final String SCHEMA_SESSION_RESPONSE = "SessionResponse";
+
+    private static final String PROP_MESSAGE = "message";
+    private static final String PROP_EMAIL = "email";
+    private static final String PROP_PASSWORD = "password";
+    private static final String PROP_TOKEN = "token";
+    private static final String PROP_DEVICE_ID = "deviceId";
+    private static final String PROP_MFA_CHALLENGE_TOKEN = "mfaChallengeToken";
+    private static final String PROP_TOTP_CODE = "totpCode";
+    private static final String PROP_REFRESH_TOKEN = "refreshToken";
+    private static final String PROP_NEW_PASSWORD = "newPassword";
+
+    private static final String EXAMPLE_EMAIL = "user@example.com";
+    private static final String EXAMPLE_PASSWORD = "VerySecurePassword123!";
+    private static final String EXAMPLE_DEVICE_ID = "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d";
+    private static final String EXAMPLE_USER_ID = "3fa85f64-5717-4562-b3fc-2c963f66afa6";
+    private static final String EXAMPLE_REFRESH_TOKEN = "rt_3fa85f6457174562b3fc2c963f66afa6";
+    private static final String REGEX_TOTP = "^\\d{6}$";
 
     private OpenApiSpecificationFactory() {
     }
@@ -43,134 +78,134 @@ public final class OpenApiSpecificationFactory {
 
     private static void registerSchemas(Components components) {
         // Shared schemas
-        components.addSchemas("ApiErrorResponse", new ObjectSchema()
+        components.addSchemas(SCHEMA_API_ERROR_RESPONSE, new ObjectSchema()
                 .description("Standard API error payload")
                 .addProperty("code", new StringSchema().example("AUTH_INVALID_CREDENTIALS"))
-                .addProperty("message", new StringSchema().example("Invalid email or password"))
+                .addProperty(PROP_MESSAGE, new StringSchema().example("Invalid email or password"))
                 .addProperty("title", new StringSchema().example("Unauthorized"))
                 .addProperty("status", new IntegerSchema().example(401))
                 .addProperty("errors", new ObjectSchema().description("Field validation errors map, if applicable"))
         );
 
         // Requests
-        components.addSchemas("RegisterRequest", new ObjectSchema()
+        components.addSchemas(SCHEMA_REGISTER_REQUEST, new ObjectSchema()
                 .description("User registration request")
-                .addProperty("email", new StringSchema().example("user@example.com"))
-                .addProperty("password", new StringSchema().example("VerySecurePassword123!"))
-                .addRequiredItem("email").addRequiredItem("password")
+                .addProperty(PROP_EMAIL, new StringSchema().example(EXAMPLE_EMAIL))
+                .addProperty(PROP_PASSWORD, new StringSchema().example(EXAMPLE_PASSWORD))
+                .addRequiredItem(PROP_EMAIL).addRequiredItem(PROP_PASSWORD)
         );
 
-        components.addSchemas("EmailVerificationRequest", new ObjectSchema()
+        components.addSchemas(SCHEMA_EMAIL_VERIFY_REQUEST, new ObjectSchema()
                 .description("Email verification dispatch request")
-                .addProperty("email", new StringSchema().example("user@example.com"))
-                .addRequiredItem("email")
+                .addProperty(PROP_EMAIL, new StringSchema().example(EXAMPLE_EMAIL))
+                .addRequiredItem(PROP_EMAIL)
         );
 
-        components.addSchemas("EmailVerificationConfirmRequest", new ObjectSchema()
+        components.addSchemas(SCHEMA_EMAIL_VERIFY_CONFIRM_REQUEST, new ObjectSchema()
                 .description("Email verification confirmation token request")
-                .addProperty("token", new StringSchema().example("f81d4fae-7dec-11d0-a765-00a0c91e6bf6"))
-                .addRequiredItem("token")
+                .addProperty(PROP_TOKEN, new StringSchema().example("f81d4fae-7dec-11d0-a765-00a0c91e6bf6"))
+                .addRequiredItem(PROP_TOKEN)
         );
 
-        components.addSchemas("LoginRequest", new ObjectSchema()
+        components.addSchemas(SCHEMA_LOGIN_REQUEST, new ObjectSchema()
                 .description("User login request")
-                .addProperty("email", new StringSchema().example("user@example.com"))
-                .addProperty("password", new StringSchema().example("VerySecurePassword123!"))
-                .addProperty("deviceId", new UUIDSchema().example("a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"))
-                .addRequiredItem("email").addRequiredItem("password")
+                .addProperty(PROP_EMAIL, new StringSchema().example(EXAMPLE_EMAIL))
+                .addProperty(PROP_PASSWORD, new StringSchema().example(EXAMPLE_PASSWORD))
+                .addProperty(PROP_DEVICE_ID, new UUIDSchema().example(EXAMPLE_DEVICE_ID))
+                .addRequiredItem(PROP_EMAIL).addRequiredItem(PROP_PASSWORD)
         );
 
-        components.addSchemas("VerifyMfaRequest", new ObjectSchema()
+        components.addSchemas(SCHEMA_VERIFY_MFA_REQUEST, new ObjectSchema()
                 .description("MFA challenge verification request")
-                .addProperty("mfaChallengeToken", new StringSchema().example("mfa_challenge_abc123"))
-                .addProperty("totpCode", new StringSchema().example("123456").pattern("^\\d{6}$"))
-                .addProperty("deviceId", new UUIDSchema().example("a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"))
-                .addRequiredItem("mfaChallengeToken").addRequiredItem("totpCode")
+                .addProperty(PROP_MFA_CHALLENGE_TOKEN, new StringSchema().example("mfa_challenge_abc123"))
+                .addProperty(PROP_TOTP_CODE, new StringSchema().example("123456").pattern(REGEX_TOTP))
+                .addProperty(PROP_DEVICE_ID, new UUIDSchema().example(EXAMPLE_DEVICE_ID))
+                .addRequiredItem(PROP_MFA_CHALLENGE_TOKEN).addRequiredItem(PROP_TOTP_CODE)
         );
 
-        components.addSchemas("RefreshTokenRequest", new ObjectSchema()
+        components.addSchemas(SCHEMA_REFRESH_TOKEN_REQUEST, new ObjectSchema()
                 .description("Refresh token request")
-                .addProperty("refreshToken", new StringSchema().example("rt_3fa85f6457174562b3fc2c963f66afa6"))
-                .addProperty("deviceId", new UUIDSchema().example("a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"))
-                .addRequiredItem("refreshToken")
+                .addProperty(PROP_REFRESH_TOKEN, new StringSchema().example(EXAMPLE_REFRESH_TOKEN))
+                .addProperty(PROP_DEVICE_ID, new UUIDSchema().example(EXAMPLE_DEVICE_ID))
+                .addRequiredItem(PROP_REFRESH_TOKEN)
         );
 
-        components.addSchemas("LogoutRequest", new ObjectSchema()
+        components.addSchemas(SCHEMA_LOGOUT_REQUEST, new ObjectSchema()
                 .description("Logout session request")
-                .addProperty("refreshToken", new StringSchema().example("rt_3fa85f6457174562b3fc2c963f66afa6"))
-                .addProperty("deviceId", new UUIDSchema().example("a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"))
-                .addRequiredItem("refreshToken")
+                .addProperty(PROP_REFRESH_TOKEN, new StringSchema().example(EXAMPLE_REFRESH_TOKEN))
+                .addProperty(PROP_DEVICE_ID, new UUIDSchema().example(EXAMPLE_DEVICE_ID))
+                .addRequiredItem(PROP_REFRESH_TOKEN)
         );
 
-        components.addSchemas("ForgotPasswordRequest", new ObjectSchema()
+        components.addSchemas(SCHEMA_FORGOT_PASSWORD_REQUEST, new ObjectSchema()
                 .description("Forgot password email request")
-                .addProperty("email", new StringSchema().example("user@example.com"))
-                .addRequiredItem("email")
+                .addProperty(PROP_EMAIL, new StringSchema().example(EXAMPLE_EMAIL))
+                .addRequiredItem(PROP_EMAIL)
         );
 
-        components.addSchemas("ResetPasswordRequest", new ObjectSchema()
+        components.addSchemas(SCHEMA_RESET_PASSWORD_REQUEST, new ObjectSchema()
                 .description("Reset password with token request")
-                .addProperty("token", new StringSchema().example("f81d4fae-7dec-11d0-a765-00a0c91e6bf6"))
-                .addProperty("newPassword", new StringSchema().example("NewVerySecurePassword123!"))
-                .addRequiredItem("token").addRequiredItem("newPassword")
+                .addProperty(PROP_TOKEN, new StringSchema().example("f81d4fae-7dec-11d0-a765-00a0c91e6bf6"))
+                .addProperty(PROP_NEW_PASSWORD, new StringSchema().example("NewVerySecurePassword123!"))
+                .addRequiredItem(PROP_TOKEN).addRequiredItem(PROP_NEW_PASSWORD)
         );
 
-        components.addSchemas("ChangePasswordRequest", new ObjectSchema()
+        components.addSchemas(SCHEMA_CHANGE_PASSWORD_REQUEST, new ObjectSchema()
                 .description("Change password request")
                 .addProperty("currentPassword", new StringSchema().example("CurrentPassword123!"))
-                .addProperty("newPassword", new StringSchema().example("NewVerySecurePassword123!"))
-                .addRequiredItem("currentPassword").addRequiredItem("newPassword")
+                .addProperty(PROP_NEW_PASSWORD, new StringSchema().example("NewVerySecurePassword123!"))
+                .addRequiredItem("currentPassword").addRequiredItem(PROP_NEW_PASSWORD)
         );
 
-        components.addSchemas("ConfirmMfaRequest", new ObjectSchema()
+        components.addSchemas(SCHEMA_CONFIRM_MFA_REQUEST, new ObjectSchema()
                 .description("Confirm MFA enrollment request")
-                .addProperty("totpCode", new StringSchema().example("654321").pattern("^\\d{6}$"))
-                .addRequiredItem("totpCode")
+                .addProperty(PROP_TOTP_CODE, new StringSchema().example("654321").pattern(REGEX_TOTP))
+                .addRequiredItem(PROP_TOTP_CODE)
         );
 
-        components.addSchemas("DisableMfaRequest", new ObjectSchema()
+        components.addSchemas(SCHEMA_DISABLE_MFA_REQUEST, new ObjectSchema()
                 .description("Disable MFA request")
-                .addProperty("password", new StringSchema().example("VerySecurePassword123!"))
-                .addProperty("totpCode", new StringSchema().example("654321").pattern("^\\d{6}$"))
-                .addRequiredItem("password").addRequiredItem("totpCode")
+                .addProperty(PROP_PASSWORD, new StringSchema().example(EXAMPLE_PASSWORD))
+                .addProperty(PROP_TOTP_CODE, new StringSchema().example("654321").pattern(REGEX_TOTP))
+                .addRequiredItem(PROP_PASSWORD).addRequiredItem(PROP_TOTP_CODE)
         );
 
         // Data Responses
         components.addSchemas("RegisterResponse", new ObjectSchema()
-                .addProperty("userId", new UUIDSchema().example("3fa85f64-5717-4562-b3fc-2c963f66afa6"))
-                .addProperty("email", new StringSchema().example("user@example.com"))
-                .addProperty("message", new StringSchema().example("User registered successfully"))
+                .addProperty("userId", new UUIDSchema().example(EXAMPLE_USER_ID))
+                .addProperty(PROP_EMAIL, new StringSchema().example(EXAMPLE_EMAIL))
+                .addProperty(PROP_MESSAGE, new StringSchema().example("User registered successfully"))
         );
 
-        components.addSchemas("TokenResponse", new ObjectSchema()
+        components.addSchemas(SCHEMA_TOKEN_RESPONSE, new ObjectSchema()
                 .addProperty("accessToken", new StringSchema().example("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."))
-                .addProperty("refreshToken", new StringSchema().example("rt_3fa85f6457174562b3fc2c963f66afa6"))
+                .addProperty(PROP_REFRESH_TOKEN, new StringSchema().example(EXAMPLE_REFRESH_TOKEN))
                 .addProperty("tokenType", new StringSchema().example("Bearer"))
                 .addProperty("expiresIn", new IntegerSchema().example(300))
         );
 
         components.addSchemas("LoginResponse", new ObjectSchema()
                 .addProperty("mfaRequired", new BooleanSchema().example(false))
-                .addProperty("mfaChallengeToken", new StringSchema().example("mfa_challenge_abc123"))
-                .addProperty("tokens", new Schema<>().$ref(OpenApiOperationEnum.SCHEMA_REF_PREFIX.value() + "TokenResponse"))
+                .addProperty(PROP_MFA_CHALLENGE_TOKEN, new StringSchema().example("mfa_challenge_abc123"))
+                .addProperty("tokens", new Schema<>().$ref(OpenApiOperationEnum.SCHEMA_REF_PREFIX.value() + SCHEMA_TOKEN_RESPONSE))
         );
 
         components.addSchemas("MessageResponse", new ObjectSchema()
-                .addProperty("message", new StringSchema().example("Operation completed successfully"))
+                .addProperty(PROP_MESSAGE, new StringSchema().example("Operation completed successfully"))
         );
 
         components.addSchemas("MeResponse", new ObjectSchema()
-                .addProperty("id", new UUIDSchema().example("3fa85f64-5717-4562-b3fc-2c963f66afa6"))
-                .addProperty("email", new StringSchema().example("user@example.com"))
+                .addProperty("id", new UUIDSchema().example(EXAMPLE_USER_ID))
+                .addProperty(PROP_EMAIL, new StringSchema().example(EXAMPLE_EMAIL))
                 .addProperty("status", new StringSchema().example("ACTIVE"))
                 .addProperty("roles", new ArraySchema().items(new StringSchema().example("USER")))
                 .addProperty("mfaEnabled", new BooleanSchema().example(true))
                 .addProperty("createdAt", new StringSchema().format(FORMAT_DATE_TIME).example("2026-01-01T00:00:00Z"))
         );
 
-        components.addSchemas("SessionResponse", new ObjectSchema()
-                .addProperty("id", new UUIDSchema().example("3fa85f64-5717-4562-b3fc-2c963f66afa6"))
-                .addProperty("deviceId", new UUIDSchema().example("a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"))
+        components.addSchemas(SCHEMA_SESSION_RESPONSE, new ObjectSchema()
+                .addProperty("id", new UUIDSchema().example(EXAMPLE_USER_ID))
+                .addProperty(PROP_DEVICE_ID, new UUIDSchema().example(EXAMPLE_DEVICE_ID))
                 .addProperty("ipAddress", new StringSchema().example("192.168.1.100"))
                 .addProperty("userAgent", new StringSchema().example("Mozilla/5.0"))
                 .addProperty("createdAt", new StringSchema().format(FORMAT_DATE_TIME).example("2026-03-30T10:00:00Z"))
@@ -179,7 +214,7 @@ public final class OpenApiSpecificationFactory {
         );
 
         components.addSchemas("SessionsResponse", new ObjectSchema()
-                .addProperty("sessions", new ArraySchema().items(new Schema<>().$ref(OpenApiOperationEnum.SCHEMA_REF_PREFIX.value() + "SessionResponse")))
+                .addProperty("sessions", new ArraySchema().items(new Schema<>().$ref(OpenApiOperationEnum.SCHEMA_REF_PREFIX.value() + SCHEMA_SESSION_RESPONSE)))
         );
 
         components.addSchemas("EnrollMfaResponse", new ObjectSchema()
@@ -205,8 +240,8 @@ public final class OpenApiSpecificationFactory {
         // API Response Wrappers
         registerResponseWrapper(components, "RegisterApiResponse", "RegisterResponse");
         registerResponseWrapper(components, "LoginApiResponse", "LoginResponse");
-        registerResponseWrapper(components, "TokenApiResponse", "TokenResponse");
-        registerResponseWrapper(components, "MessageApiResponse", "MessageResponse");
+        registerResponseWrapper(components, SCHEMA_TOKEN_API_RESPONSE, SCHEMA_TOKEN_RESPONSE);
+        registerResponseWrapper(components, SCHEMA_MESSAGE_API_RESPONSE, "MessageResponse");
         registerResponseWrapper(components, "MeApiResponse", "MeResponse");
         registerResponseWrapper(components, "SessionsApiResponse", "SessionsResponse");
         registerResponseWrapper(components, "EnrollMfaApiResponse", "EnrollMfaResponse");
@@ -215,7 +250,7 @@ public final class OpenApiSpecificationFactory {
                 .description("Standard API error response wrapper")
                 .addProperty("success", new BooleanSchema().example(false))
                 .addProperty("data", new ObjectSchema().nullable(true).example(null))
-                .addProperty("error", new Schema<>().$ref(OpenApiOperationEnum.SCHEMA_REF_PREFIX.value() + "ApiErrorResponse"))
+                .addProperty("error", new Schema<>().$ref(OpenApiOperationEnum.SCHEMA_REF_PREFIX.value() + SCHEMA_API_ERROR_RESPONSE))
                 .addProperty("timestamp", new StringSchema().format(FORMAT_DATE_TIME).example("2026-03-30T12:00:00Z"))
         );
     }
@@ -225,117 +260,117 @@ public final class OpenApiSpecificationFactory {
                 .description("Standard API response wrapper for " + dataSchemaName)
                 .addProperty("success", new BooleanSchema().example(true))
                 .addProperty("data", new Schema<>().$ref(OpenApiOperationEnum.SCHEMA_REF_PREFIX.value() + dataSchemaName))
-                .addProperty("error", new Schema<>().$ref(OpenApiOperationEnum.SCHEMA_REF_PREFIX.value() + "ApiErrorResponse").nullable(true))
+                .addProperty("error", new Schema<>().$ref(OpenApiOperationEnum.SCHEMA_REF_PREFIX.value() + SCHEMA_API_ERROR_RESPONSE).nullable(true))
                 .addProperty("timestamp", new StringSchema().format(FORMAT_DATE_TIME).example("2026-03-30T12:00:00Z"))
         );
     }
 
     private static void registerRoutes(Paths paths, String bearerScheme) {
-        // 1. POST /api/v1/auth/register
+        // Route 1: Register
         paths.addPathItem(OpenApiOperationEnum.PATH_REGISTER.value(), new PathItem().post(
                 createOperation("register", "Register new user account",
                         "Registers a new user account with email and password, creates verification token and sends verification email event.",
                         OpenApiOperationEnum.TAG_AUTH.value(), null)
-                        .requestBody(createRequestBody("RegisterRequest", "Registration payload with email and password"))
+                        .requestBody(createRequestBody(SCHEMA_REGISTER_REQUEST, "Registration payload with email and password"))
                         .responses(createResponses("201", "RegisterApiResponse", List.of("400", "409", "429")))
         ));
 
-        // 2. POST /api/v1/auth/email/verify/request
+        // Route 2: Email verification request
         paths.addPathItem(OpenApiOperationEnum.PATH_EMAIL_VERIFY_REQUEST.value(), new PathItem().post(
                 createOperation("requestEmailVerification", "Request email verification token",
                         "Requests a new verification token to be dispatched to the user's email address.",
                         OpenApiOperationEnum.TAG_AUTH.value(), null)
-                        .requestBody(createRequestBody("EmailVerificationRequest", "Email verification request payload"))
-                        .responses(createResponses("200", "MessageApiResponse", List.of("400", "429")))
+                        .requestBody(createRequestBody(SCHEMA_EMAIL_VERIFY_REQUEST, "Email verification request payload"))
+                        .responses(createResponses("200", SCHEMA_MESSAGE_API_RESPONSE, List.of("400", "429")))
         ));
 
-        // 3. POST /api/v1/auth/email/verify/confirm
+        // Route 3: Email verification confirmation
         paths.addPathItem(OpenApiOperationEnum.PATH_EMAIL_VERIFY_CONFIRM.value(), new PathItem().post(
                 createOperation("confirmEmailVerification", "Confirm email verification",
                         "Validates the one-time token received via email and transitions user status to ACTIVE.",
                         OpenApiOperationEnum.TAG_AUTH.value(), null)
-                        .requestBody(createRequestBody("EmailVerificationConfirmRequest", "Confirmation payload containing verification token"))
-                        .responses(createResponses("200", "MessageApiResponse", List.of("400", "404")))
+                        .requestBody(createRequestBody(SCHEMA_EMAIL_VERIFY_CONFIRM_REQUEST, "Confirmation payload containing verification token"))
+                        .responses(createResponses("200", SCHEMA_MESSAGE_API_RESPONSE, List.of("400", "404")))
         ));
 
-        // 4. POST /api/v1/auth/login
+        // Route 4: Login
         paths.addPathItem(OpenApiOperationEnum.PATH_LOGIN.value(), new PathItem().post(
                 createOperation("login", "Authenticate user credentials",
                         "Authenticates email and password. If MFA is active, returns an ephemeral challenge token; otherwise returns access/refresh token pair and creates a new session.",
                         OpenApiOperationEnum.TAG_AUTH.value(), null)
                         .addParametersItem(new HeaderParameter().name(OpenApiOperationEnum.HEADER_USER_AGENT.value()).description(OpenApiOperationEnum.HEADER_USER_AGENT_DESC.value()).required(false))
                         .addParametersItem(new HeaderParameter().name(OpenApiOperationEnum.HEADER_FORWARDED_FOR.value()).description(OpenApiOperationEnum.HEADER_FORWARDED_FOR_DESC.value()).required(false))
-                        .requestBody(createRequestBody("LoginRequest", "User credentials and optional device identifier"))
+                        .requestBody(createRequestBody(SCHEMA_LOGIN_REQUEST, "User credentials and optional device identifier"))
                         .responses(createResponses("200", "LoginApiResponse", List.of("400", "401", "403", "429")))
         ));
 
-        // 5. POST /api/v1/auth/mfa/verify
+        // Route 5: MFA challenge verification
         paths.addPathItem(OpenApiOperationEnum.PATH_MFA_VERIFY.value(), new PathItem().post(
                 createOperation("verifyMfa", "Verify MFA challenge during login",
                         "Validates a 6-digit TOTP code against the temporary MFA challenge token issued at login.",
                         OpenApiOperationEnum.TAG_MFA.value(), null)
                         .addParametersItem(new HeaderParameter().name(OpenApiOperationEnum.HEADER_USER_AGENT.value()).description(OpenApiOperationEnum.HEADER_USER_AGENT_DESC.value()).required(false))
                         .addParametersItem(new HeaderParameter().name(OpenApiOperationEnum.HEADER_FORWARDED_FOR.value()).description(OpenApiOperationEnum.HEADER_FORWARDED_FOR_DESC.value()).required(false))
-                        .requestBody(createRequestBody("VerifyMfaRequest", "MFA challenge token and TOTP verification code"))
-                        .responses(createResponses("200", "TokenApiResponse", List.of("400", "401", "429")))
+                        .requestBody(createRequestBody(SCHEMA_VERIFY_MFA_REQUEST, "MFA challenge token and TOTP verification code"))
+                        .responses(createResponses("200", SCHEMA_TOKEN_API_RESPONSE, List.of("400", "401", "429")))
         ));
 
-        // 6. POST /api/v1/auth/refresh
+        // Route 6: Refresh token rotation
         paths.addPathItem(OpenApiOperationEnum.PATH_REFRESH.value(), new PathItem().post(
                 createOperation("refreshToken", "Refresh access and refresh tokens",
                         "Performs refresh token rotation: revokes the old refresh token and issues a new access/refresh token pair.",
                         OpenApiOperationEnum.TAG_AUTH.value(), null)
                         .addParametersItem(new HeaderParameter().name(OpenApiOperationEnum.HEADER_USER_AGENT.value()).description(OpenApiOperationEnum.HEADER_USER_AGENT_DESC.value()).required(false))
                         .addParametersItem(new HeaderParameter().name(OpenApiOperationEnum.HEADER_FORWARDED_FOR.value()).description(OpenApiOperationEnum.HEADER_FORWARDED_FOR_DESC.value()).required(false))
-                        .requestBody(createRequestBody("RefreshTokenRequest", "Valid refresh token and optional device identifier"))
-                        .responses(createResponses("200", "TokenApiResponse", List.of("400", "401")))
+                        .requestBody(createRequestBody(SCHEMA_REFRESH_TOKEN_REQUEST, "Valid refresh token and optional device identifier"))
+                        .responses(createResponses("200", SCHEMA_TOKEN_API_RESPONSE, List.of("400", "401")))
         ));
 
-        // 7. POST /api/v1/auth/logout
+        // Route 7: Logout specific session
         paths.addPathItem(OpenApiOperationEnum.PATH_LOGOUT.value(), new PathItem().post(
                 createOperation("logout", "Logout specific session",
                         "Revokes the session and marks the refresh token as revoked.",
                         OpenApiOperationEnum.TAG_AUTH.value(), bearerScheme)
-                        .requestBody(createRequestBody("LogoutRequest", "Refresh token to invalidate"))
-                        .responses(createResponses("200", "MessageApiResponse", List.of("400", "401")))
+                        .requestBody(createRequestBody(SCHEMA_LOGOUT_REQUEST, "Refresh token to invalidate"))
+                        .responses(createResponses("200", SCHEMA_MESSAGE_API_RESPONSE, List.of("400", "401")))
         ));
 
-        // 8. POST /api/v1/auth/logout/all
+        // Route 8: Logout all sessions
         paths.addPathItem(OpenApiOperationEnum.PATH_LOGOUT_ALL.value(), new PathItem().post(
                 createOperation("logoutAll", "Logout all user sessions",
                         "Revokes all active sessions and refresh tokens belonging to the authenticated user.",
                         OpenApiOperationEnum.TAG_AUTH.value(), bearerScheme)
-                        .responses(createResponses("200", "MessageApiResponse", List.of("401")))
+                        .responses(createResponses("200", SCHEMA_MESSAGE_API_RESPONSE, List.of("401")))
         ));
 
-        // 9. POST /api/v1/auth/password/forgot
+        // Route 9: Forgot password
         paths.addPathItem(OpenApiOperationEnum.PATH_PASSWORD_FORGOT.value(), new PathItem().post(
                 createOperation("forgotPassword", "Request password reset email",
                         "Generates a password reset token and sends an email notification if an account matches the email address.",
                         OpenApiOperationEnum.TAG_PASSWORD.value(), null)
-                        .requestBody(createRequestBody("ForgotPasswordRequest", "Target account email address"))
-                        .responses(createResponses("200", "MessageApiResponse", List.of("400", "429")))
+                        .requestBody(createRequestBody(SCHEMA_FORGOT_PASSWORD_REQUEST, "Target account email address"))
+                        .responses(createResponses("200", SCHEMA_MESSAGE_API_RESPONSE, List.of("400", "429")))
         ));
 
-        // 10. POST /api/v1/auth/password/reset
+        // Route 10: Reset password
         paths.addPathItem(OpenApiOperationEnum.PATH_PASSWORD_RESET.value(), new PathItem().post(
                 createOperation("resetPassword", "Reset password with token",
                         "Resets user password using the verification token and invalidates all existing sessions.",
                         OpenApiOperationEnum.TAG_PASSWORD.value(), null)
-                        .requestBody(createRequestBody("ResetPasswordRequest", "Reset token and new password"))
-                        .responses(createResponses("200", "MessageApiResponse", List.of("400")))
+                        .requestBody(createRequestBody(SCHEMA_RESET_PASSWORD_REQUEST, "Reset token and new password"))
+                        .responses(createResponses("200", SCHEMA_MESSAGE_API_RESPONSE, List.of("400")))
         ));
 
-        // 11. POST /api/v1/auth/password/change
+        // Route 11: Change password
         paths.addPathItem(OpenApiOperationEnum.PATH_PASSWORD_CHANGE.value(), new PathItem().post(
                 createOperation("changePassword", "Change password for authenticated user",
                         "Updates password for the currently logged-in user after verifying current credentials.",
                         OpenApiOperationEnum.TAG_PASSWORD.value(), bearerScheme)
-                        .requestBody(createRequestBody("ChangePasswordRequest", "Current and new password payload"))
-                        .responses(createResponses("200", "MessageApiResponse", List.of("400", "401")))
+                        .requestBody(createRequestBody(SCHEMA_CHANGE_PASSWORD_REQUEST, "Current and new password payload"))
+                        .responses(createResponses("200", SCHEMA_MESSAGE_API_RESPONSE, List.of("400", "401")))
         ));
 
-        // 12. GET /api/v1/auth/me
+        // Route 12: User profile
         paths.addPathItem(OpenApiOperationEnum.PATH_ME.value(), new PathItem().get(
                 createOperation("getMe", "Get authenticated user profile",
                         "Retrieves the authenticated user's profile details including roles, status, and MFA status.",
@@ -343,7 +378,7 @@ public final class OpenApiSpecificationFactory {
                         .responses(createResponses("200", "MeApiResponse", List.of("401")))
         ));
 
-        // 13. GET /api/v1/auth/sessions
+        // Route 13: List active user sessions
         paths.addPathItem(OpenApiOperationEnum.PATH_SESSIONS.value(), new PathItem().get(
                 createOperation("getSessions", "List active user sessions",
                         "Returns a list of all active sessions for the authenticated user, including IP address, user agent, and activity timestamps.",
@@ -351,16 +386,16 @@ public final class OpenApiSpecificationFactory {
                         .responses(createResponses("200", "SessionsApiResponse", List.of("401")))
         ));
 
-        // 14. DELETE /api/v1/auth/sessions/{id}
+        // Route 14: Revoke user session
         paths.addPathItem(OpenApiOperationEnum.PATH_SESSION_BY_ID.value(), new PathItem().delete(
                 createOperation("revokeSession", "Revoke specific user session",
                         "Revokes a single active session identified by its session UUID.",
                         OpenApiOperationEnum.TAG_USER.value(), bearerScheme)
                         .addParametersItem(new PathParameter().name(OpenApiOperationEnum.PARAM_SESSION_ID.value()).description(OpenApiOperationEnum.PARAM_SESSION_ID_DESC.value()).required(true).schema(new UUIDSchema()))
-                        .responses(createResponses("200", "MessageApiResponse", List.of("401", "404")))
+                        .responses(createResponses("200", SCHEMA_MESSAGE_API_RESPONSE, List.of("401", "404")))
         ));
 
-        // 15. POST /api/v1/auth/mfa/enroll
+        // Route 15: Enroll MFA
         paths.addPathItem(OpenApiOperationEnum.PATH_MFA_ENROLL.value(), new PathItem().post(
                 createOperation("enrollMfa", "Enroll in TOTP MFA",
                         "Generates a new TOTP secret and otpauth URI with recovery codes for QR code scanning.",
@@ -368,25 +403,25 @@ public final class OpenApiSpecificationFactory {
                         .responses(createResponses("200", "EnrollMfaApiResponse", List.of("401", "409")))
         ));
 
-        // 16. POST /api/v1/auth/mfa/confirm
+        // Route 16: Confirm MFA
         paths.addPathItem(OpenApiOperationEnum.PATH_MFA_CONFIRM.value(), new PathItem().post(
                 createOperation("confirmMfa", "Confirm and activate TOTP MFA",
                         "Validates the initial 6-digit TOTP code and marks MFA as activated for the user.",
                         OpenApiOperationEnum.TAG_MFA.value(), bearerScheme)
-                        .requestBody(createRequestBody("ConfirmMfaRequest", "TOTP confirmation code"))
-                        .responses(createResponses("200", "MessageApiResponse", List.of("400", "401")))
+                        .requestBody(createRequestBody(SCHEMA_CONFIRM_MFA_REQUEST, "TOTP confirmation code"))
+                        .responses(createResponses("200", SCHEMA_MESSAGE_API_RESPONSE, List.of("400", "401")))
         ));
 
-        // 17. DELETE /api/v1/auth/mfa/disable
+        // Route 17: Disable MFA
         paths.addPathItem(OpenApiOperationEnum.PATH_MFA_DISABLE.value(), new PathItem().delete(
                 createOperation("disableMfa", "Disable TOTP MFA",
                         "Disables MFA on user account after verifying current password and a valid 6-digit TOTP code.",
                         OpenApiOperationEnum.TAG_MFA.value(), bearerScheme)
-                        .requestBody(createRequestBody("DisableMfaRequest", "Password and TOTP code for MFA disable confirmation"))
-                        .responses(createResponses("200", "MessageApiResponse", List.of("400", "401")))
+                        .requestBody(createRequestBody(SCHEMA_DISABLE_MFA_REQUEST, "Password and TOTP code for MFA disable confirmation"))
+                        .responses(createResponses("200", SCHEMA_MESSAGE_API_RESPONSE, List.of("400", "401")))
         ));
 
-        // 18. GET /.well-known/jwks.json
+        // Route 18: Get JWKS
         paths.addPathItem(OpenApiOperationEnum.PATH_JWKS.value(), new PathItem().get(
                 createOperation("getJwks", "Get JSON Web Key Set (JWKS)",
                         "Returns public keys for validating JWT tokens issued by this authentication service.",

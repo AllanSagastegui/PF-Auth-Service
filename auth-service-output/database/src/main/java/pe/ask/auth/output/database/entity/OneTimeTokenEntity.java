@@ -27,6 +27,7 @@ public final class OneTimeTokenEntity implements Persistable<UUID> {
     public OneTimeTokenEntity() {
     }
 
+    @SuppressWarnings("java:S107")
     public OneTimeTokenEntity(
             UUID id,
             UUID userId,

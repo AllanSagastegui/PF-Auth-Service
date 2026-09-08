@@ -18,7 +18,6 @@ import pe.ask.auth.core.usecase.annotation.UseCase;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.time.Instant;
 
 @UseCase
 public final class EmailVerificationRequestUseCase implements EmailVerificationRequestInputPort {

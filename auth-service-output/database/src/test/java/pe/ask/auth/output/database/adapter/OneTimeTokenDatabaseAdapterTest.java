@@ -3,7 +3,6 @@ package pe.ask.auth.output.database.adapter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import pe.ask.auth.core.model.OneTimeToken;
 import pe.ask.auth.core.model.OneTimeTokenType;
 import pe.ask.auth.output.database.entity.OneTimeTokenEntity;
@@ -16,7 +15,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +26,7 @@ class OneTimeTokenDatabaseAdapterTest {
 
     @BeforeEach
     void setUp() {
-        repository = Mockito.mock(OneTimeTokenR2dbcRepository.class);
+        repository = mock(OneTimeTokenR2dbcRepository.class);
         adapter = new OneTimeTokenDatabaseAdapter(repository);
     }
 
@@ -102,7 +101,7 @@ class OneTimeTokenDatabaseAdapterTest {
         UUID userId = UUID.randomUUID();
         Instant now = Instant.now();
 
-        when(repository.revokeByUserIdAndType(eq(userId), eq("EMAIL_VERIFICATION"), eq(now)))
+        when(repository.revokeByUserIdAndType(userId, "EMAIL_VERIFICATION", now))
                 .thenReturn(Mono.empty());
 
         StepVerifier.create(adapter.revokeByUserIdAndType(userId, OneTimeTokenType.EMAIL_VERIFICATION, now))

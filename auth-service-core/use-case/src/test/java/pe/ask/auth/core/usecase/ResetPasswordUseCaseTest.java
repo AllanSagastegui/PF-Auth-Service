@@ -29,7 +29,6 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -114,7 +113,7 @@ class ResetPasswordUseCaseTest {
         when(userRepository.findById(userId)).thenReturn(Mono.just(user));
         when(passwordHasher.hashPassword("NewSecurePassword12345!")).thenReturn(Mono.just("new_hash"));
         when(userRepository.update(any())).thenReturn(Mono.just(user.changePassword("new_hash", now)));
-        when(sessionRepository.revokeAllByUserId(eq(userId), eq(now))).thenReturn(Mono.empty());
+        when(sessionRepository.revokeAllByUserId(userId, now)).thenReturn(Mono.empty());
 
         StepVerifier.create(useCase.resetPassword(cmd))
                 .expectNextMatches(res -> res.message().contains("Password reset successfully"))

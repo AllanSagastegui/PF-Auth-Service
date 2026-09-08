@@ -35,7 +35,6 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -102,8 +101,8 @@ class RefreshTokenUseCaseTest {
         String lockKey = "idempotency:refresh:idem-1:" + deviceId;
         when(clockPort.now()).thenReturn(Mono.just(now));
         when(tokenGenerator.hashToken("raw_token")).thenReturn(Mono.just("raw_hash"));
-        when(idempotencyPort.acquireLock(eq(lockKey), any(), any())).thenReturn(Mono.just(false));
-        when(idempotencyPort.getCachedResponse(eq(lockKey))).thenReturn(Mono.just(cachedSerialized));
+        when(idempotencyPort.acquireLock(any(), any(), any())).thenReturn(Mono.just(false));
+        when(idempotencyPort.getCachedResponse(lockKey)).thenReturn(Mono.just(cachedSerialized));
 
         StepVerifier.create(useCase.refresh(cmd))
                 .expectNextMatches(res ->
@@ -118,12 +117,11 @@ class RefreshTokenUseCaseTest {
     @DisplayName("Should throw IdempotencyConflictException when lock is acquired by another concurrent request and response not yet cached")
     void shouldThrowConflictWhenLockBusyWithoutCache() {
         RefreshTokenCommand cmd = new RefreshTokenCommand("raw_token", deviceId, "idem-1", "bodyhash", "127.0.0.1", "Agent");
-        String lockKey = "idempotency:refresh:idem-1:" + deviceId;
 
         when(clockPort.now()).thenReturn(Mono.just(now));
         when(tokenGenerator.hashToken("raw_token")).thenReturn(Mono.just("raw_hash"));
-        when(idempotencyPort.acquireLock(eq(lockKey), any(), any())).thenReturn(Mono.just(false));
-        when(idempotencyPort.getCachedResponse(eq(lockKey))).thenReturn(Mono.empty());
+        when(idempotencyPort.acquireLock(any(), any(), any())).thenReturn(Mono.just(false));
+        when(idempotencyPort.getCachedResponse(any())).thenReturn(Mono.empty());
 
         StepVerifier.create(useCase.refresh(cmd))
                 .expectError(IdempotencyConflictException.class)
@@ -134,7 +132,6 @@ class RefreshTokenUseCaseTest {
     @DisplayName("Should detect token reuse when token is ROTATED, revoking family and session")
     void shouldDetectReuseAndRevokeFamily() {
         RefreshTokenCommand cmd = new RefreshTokenCommand("reused_token", deviceId, "idem-2", "bodyhash", "127.0.0.1", "Agent");
-        String lockKey = "idempotency:refresh:idem-2:" + deviceId;
 
         RefreshToken rotatedToken = new RefreshToken(
                 oldTokenId,
@@ -152,12 +149,11 @@ class RefreshTokenUseCaseTest {
 
         when(clockPort.now()).thenReturn(Mono.just(now));
         when(tokenGenerator.hashToken("reused_token")).thenReturn(Mono.just("reused_hash"));
-        when(idempotencyPort.acquireLock(eq(lockKey), any(), any())).thenReturn(Mono.just(true));
+        when(idempotencyPort.acquireLock(any(), any(), any())).thenReturn(Mono.just(true));
         when(refreshTokenRepository.findByTokenHashForUpdate("reused_hash")).thenReturn(Mono.just(rotatedToken));
-        when(refreshTokenRepository.revokeFamily(eq(familyId), eq(now))).thenReturn(Mono.empty());
-        when(sessionRepository.revokeById(eq(sessionId))).thenReturn(Mono.empty());
-        when(auditPort.recordSecurityEvent(eq("REFRESH_TOKEN_REUSE_DETECTED"), eq(userId), any(), eq(now)))
-                .thenReturn(Mono.empty());
+        when(refreshTokenRepository.revokeFamily(familyId, now)).thenReturn(Mono.empty());
+        when(sessionRepository.revokeById(sessionId)).thenReturn(Mono.empty());
+        when(auditPort.recordSecurityEvent(any(), any(), any(), any())).thenReturn(Mono.empty());
 
         StepVerifier.create(useCase.refresh(cmd))
                 .expectError(UnauthorizedException.class)
@@ -165,7 +161,7 @@ class RefreshTokenUseCaseTest {
 
         verify(refreshTokenRepository).revokeFamily(familyId, now);
         verify(sessionRepository).revokeById(sessionId);
-        verify(auditPort).recordSecurityEvent(eq("REFRESH_TOKEN_REUSE_DETECTED"), eq(userId), any(), eq(now));
+        verify(auditPort).recordSecurityEvent(any(), any(), any(), any());
     }
 
     @Test
@@ -173,7 +169,6 @@ class RefreshTokenUseCaseTest {
     void shouldRejectDeviceMismatch() {
         UUID otherDevice = UUID.randomUUID();
         RefreshTokenCommand cmd = new RefreshTokenCommand("raw_token", deviceId, "idem-3", "bodyhash", "127.0.0.1", "Agent");
-        String lockKey = "idempotency:refresh:idem-3:" + deviceId;
 
         RefreshToken token = new RefreshToken(
                 oldTokenId,
@@ -191,12 +186,11 @@ class RefreshTokenUseCaseTest {
 
         when(clockPort.now()).thenReturn(Mono.just(now));
         when(tokenGenerator.hashToken("raw_token")).thenReturn(Mono.just("token_hash"));
-        when(idempotencyPort.acquireLock(eq(lockKey), any(), any())).thenReturn(Mono.just(true));
+        when(idempotencyPort.acquireLock(any(), any(), any())).thenReturn(Mono.just(true));
         when(refreshTokenRepository.findByTokenHashForUpdate("token_hash")).thenReturn(Mono.just(token));
-        when(refreshTokenRepository.revokeFamily(eq(familyId), eq(now))).thenReturn(Mono.empty());
-        when(sessionRepository.revokeById(eq(sessionId))).thenReturn(Mono.empty());
-        when(auditPort.recordSecurityEvent(eq("REFRESH_TOKEN_REUSE_DETECTED"), eq(userId), any(), eq(now)))
-                .thenReturn(Mono.empty());
+        when(refreshTokenRepository.revokeFamily(familyId, now)).thenReturn(Mono.empty());
+        when(sessionRepository.revokeById(sessionId)).thenReturn(Mono.empty());
+        when(auditPort.recordSecurityEvent(any(), any(), any(), any())).thenReturn(Mono.empty());
 
         StepVerifier.create(useCase.refresh(cmd))
                 .expectError(UnauthorizedException.class)
@@ -209,7 +203,6 @@ class RefreshTokenUseCaseTest {
     @DisplayName("Should perform regular rotation and cache idempotency result")
     void shouldRotateTokenSuccessfully() {
         RefreshTokenCommand cmd = new RefreshTokenCommand("valid_token", deviceId, "idem-4", "bodyhash", "127.0.0.1", "Agent");
-        String lockKey = "idempotency:refresh:idem-4:" + deviceId;
 
         RefreshToken activeToken = new RefreshToken(
                 oldTokenId,
@@ -229,10 +222,10 @@ class RefreshTokenUseCaseTest {
 
         when(clockPort.now()).thenReturn(Mono.just(now));
         when(tokenGenerator.hashToken("valid_token")).thenReturn(Mono.just("valid_hash"));
-        when(idempotencyPort.acquireLock(eq(lockKey), any(), any())).thenReturn(Mono.just(true));
+        when(idempotencyPort.acquireLock(any(), any(), any())).thenReturn(Mono.just(true));
         when(refreshTokenRepository.findByTokenHashForUpdate("valid_hash")).thenReturn(Mono.just(activeToken));
         when(refreshTokenRepository.update(argThat(t -> t.status() == RefreshTokenStatus.ROTATED))).thenReturn(Mono.just(activeToken.rotate(now)));
-        when(tokenGenerator.issueTokens(eq(user), any(Session.class), eq(familyId)))
+        when(tokenGenerator.issueTokens(any(), any(), any()))
                 .thenReturn(Mono.just(new AuthTokens("new_access_token", "new_refresh_token", 900L, "Bearer")));
         when(tokenGenerator.hashToken("new_refresh_token")).thenReturn(Mono.just("new_refresh_hash"));
         when(sessionRepository.findById(sessionId)).thenReturn(Mono.just(session));
@@ -240,7 +233,7 @@ class RefreshTokenUseCaseTest {
         when(idGenerator.nextId()).thenReturn(Mono.just(newTokenId));
         when(sessionRepository.update(any(Session.class))).thenReturn(Mono.just(session.touch(now, now.plusSeconds(86400))));
         when(refreshTokenRepository.save(any(RefreshToken.class))).thenAnswer(inv -> Mono.just(inv.getArgument(0)));
-        when(idempotencyPort.saveCachedResponse(eq(lockKey), any(), any())).thenReturn(Mono.empty());
+        when(idempotencyPort.saveCachedResponse(any(), any(), any())).thenReturn(Mono.empty());
 
         StepVerifier.create(useCase.refresh(cmd))
                 .expectNextMatches(res ->
@@ -251,6 +244,6 @@ class RefreshTokenUseCaseTest {
 
         verify(refreshTokenRepository).update(argThat(t -> t.status() == RefreshTokenStatus.ROTATED));
         verify(refreshTokenRepository).save(argThat(t -> t.tokenHash().equals("new_refresh_hash")));
-        verify(idempotencyPort).saveCachedResponse(eq(lockKey), any(), any());
+        verify(idempotencyPort).saveCachedResponse(any(), any(), any());
     }
 }

@@ -29,12 +29,9 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 public final class TokenGeneratorAdapter implements TokenGeneratorOutputPort {
 
@@ -92,7 +89,7 @@ public final class TokenGeneratorAdapter implements TokenGeneratorOutputPort {
 
                     List<String> roles = user.roles().stream()
                             .map(Role::name)
-                            .collect(Collectors.toList());
+                            .toList();
 
                     JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256)
                             .keyID(ecJwk.getKeyID())
@@ -103,10 +100,10 @@ public final class TokenGeneratorAdapter implements TokenGeneratorOutputPort {
                             .issuer(SecurityEnum.ISSUER.value())
                             .subject(user.id().toString())
                             .audience(SecurityEnum.AUDIENCE.value())
-                            .issueTime(Date.from(now))
-                            .notBeforeTime(Date.from(now))
-                            .expirationTime(Date.from(exp))
-                            .jwtID(generateSafeUuid())
+                            .claim("iat", now.getEpochSecond())
+                            .claim("nbf", now.getEpochSecond())
+                            .claim("exp", exp.getEpochSecond())
+                            .jwtID(UUID.randomUUID().toString())
                             .claim(SecurityEnum.CLAIM_SID.value(), session.id().toString())
                             .claim(SecurityEnum.CLAIM_ROLES.value(), roles)
                             .claim(SecurityEnum.CLAIM_SCOPE.value(), SecurityEnum.SCOPE_OPENID_PROFILE.value())
@@ -119,7 +116,7 @@ public final class TokenGeneratorAdapter implements TokenGeneratorOutputPort {
                     signedJWT.sign(signer);
 
                     String jwtString = signedJWT.serialize();
-                    return AuthTokens.ofBearer(jwtString, rawRefreshToken, (long) SecurityIntEnum.ACCESS_TOKEN_TTL_SECONDS.value());
+                    return AuthTokens.ofBearer(jwtString, rawRefreshToken, SecurityIntEnum.ACCESS_TOKEN_TTL_SECONDS.value());
                 }).subscribeOn(Schedulers.parallel()));
     }
 
@@ -141,10 +138,5 @@ public final class TokenGeneratorAdapter implements TokenGeneratorOutputPort {
                 .mapNotNull(mfaChallenges::remove)
                 .filter(challenge -> !challenge.expiresAt().isBefore(Instant.now()))
                 .map(MfaChallenge::userId);
-    }
-
-    private static String generateSafeUuid() {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        return new UUID(random.nextLong(), random.nextLong()).toString();
     }
 }

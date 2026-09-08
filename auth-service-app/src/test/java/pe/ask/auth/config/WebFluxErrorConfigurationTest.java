@@ -51,11 +51,12 @@ class WebFluxErrorConfigurationTest {
         assertThat(exchange.getResponse().getHeaders().getFirst(ApiHeaderEnum.CORRELATION_ID.value())).isEqualTo("corr-12345");
 
         String body = extractResponseBody(exchange);
-        assertThat(body).contains("\"success\":false");
-        assertThat(body).contains("\"code\":\"AUTH_USER_ALREADY_EXISTS\"");
-        assertThat(body).contains("\"status\":409");
-        assertThat(body).contains("\"user@example.com\"");
-        assertThat(body).doesNotContain("\"data\":");
+        assertThat(body)
+                .contains("\"success\":false")
+                .contains("\"code\":\"AUTH_USER_ALREADY_EXISTS\"")
+                .contains("\"status\":409")
+                .contains("\"user@example.com\"")
+                .doesNotContain("\"data\":");
     }
 
     @Test
@@ -77,10 +78,11 @@ class WebFluxErrorConfigurationTest {
         assertThat(exchange.getResponse().getHeaders().getFirst(ApiHeaderEnum.CORRELATION_ID.value())).isEqualTo("req-67890");
 
         String body = extractResponseBody(exchange);
-        assertThat(body).contains("\"success\":false");
-        assertThat(body).contains("\"code\":\"AUTH_VALIDATION_ERROR\"");
-        assertThat(body).contains("\"status\":400");
-        assertThat(body).contains("\"password\":\"must not be blank\"");
+        assertThat(body)
+                .contains("\"success\":false")
+                .contains("\"code\":\"AUTH_VALIDATION_ERROR\"")
+                .contains("\"status\":400")
+                .contains("\"password\":\"must not be blank\"");
     }
 
     @Test
@@ -98,10 +100,11 @@ class WebFluxErrorConfigurationTest {
         assertThat(exchange.getResponse().getHeaders().getFirst(ApiHeaderEnum.CORRELATION_ID.value())).isNotBlank();
 
         String body = extractResponseBody(exchange);
-        assertThat(body).contains("\"success\":false");
-        assertThat(body).contains("\"code\":\"AUTH_UNAUTHORIZED\"");
-        assertThat(body).contains("\"status\":401");
-        assertThat(body).contains("Token has expired");
+        assertThat(body)
+                .contains("\"success\":false")
+                .contains("\"code\":\"AUTH_UNAUTHORIZED\"")
+                .contains("\"status\":401")
+                .contains("Token has expired");
     }
 
     @Test
@@ -118,9 +121,10 @@ class WebFluxErrorConfigurationTest {
         assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 
         String body = extractResponseBody(exchange);
-        assertThat(body).contains("\"success\":false");
-        assertThat(body).contains("\"status\":404");
-        assertThat(body).contains("\"code\":\"HTTP_404\"");
+        assertThat(body)
+                .contains("\"success\":false")
+                .contains("\"status\":404")
+                .contains("\"code\":\"HTTP_404\"");
     }
 
     @Test
@@ -137,10 +141,11 @@ class WebFluxErrorConfigurationTest {
         assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 
         String body = extractResponseBody(exchange);
-        assertThat(body).contains("\"success\":false");
-        assertThat(body).contains("\"status\":500");
-        assertThat(body).contains("\"code\":\"AUTH_INTERNAL_ERROR\"");
-        assertThat(body).doesNotContain("\"data\":");
+        assertThat(body)
+                .contains("\"success\":false")
+                .contains("\"status\":500")
+                .contains("\"code\":\"AUTH_INTERNAL_ERROR\"")
+                .doesNotContain("\"data\":");
     }
 
     private String extractResponseBody(MockServerWebExchange exchange) {

@@ -5,7 +5,6 @@ import com.tngtech.archunit.lang.ArchRule;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
-import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 import static pe.ask.auth.architecture.AllowedLibraries.*;
 import static pe.ask.auth.architecture.ArchitecturePackages.*;
 

@@ -291,9 +291,9 @@ public final class InputArchitectureRules {
                     );
 
     /*
-     * ================================================================
+     * ===============================================================
      * ROUTER
-     * ================================================================
+     * ===============================================================
      */
 
     /**
@@ -337,7 +337,7 @@ public final class InputArchitectureRules {
                     .allowEmptyShould(true);
 
     /**
-     * Todo Router debe utilizar la API funcional SERVER de WebFlux.
+     * Cada Router debe utilizar la API funcional SERVER de WebFlux.
      *
      * Se espera utilizar tipos como:
      *
@@ -449,9 +449,9 @@ public final class InputArchitectureRules {
                     );
 
     /*
-     * ================================================================
+     * ===============================================================
      * HANDLER
-     * ================================================================
+     * ===============================================================
      */
 
     /**
@@ -488,7 +488,7 @@ public final class InputArchitectureRules {
                     .allowEmptyShould(true);
 
     /**
-     * Todo Handler debe utilizar la API funcional de WebFlux.
+     * Cada Handler debe utilizar la API funcional de WebFlux.
      *
      * Normalmente:
      *

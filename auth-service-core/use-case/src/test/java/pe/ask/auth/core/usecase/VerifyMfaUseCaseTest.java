@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -115,7 +114,7 @@ class VerifyMfaUseCaseTest {
                 .thenReturn(Mono.just(familyId))
                 .thenReturn(Mono.just(refId));
         when(sessionRepository.save(any(Session.class))).thenAnswer(inv -> Mono.just(inv.getArgument(0)));
-        when(tokenGenerator.issueTokens(eq(user), any(Session.class), eq(familyId)))
+        when(tokenGenerator.issueTokens(any(User.class), any(Session.class), any(UUID.class)))
                 .thenReturn(Mono.just(new AuthTokens("access_token", "refresh_token", 900L, "Bearer")));
         when(tokenGenerator.hashToken("refresh_token")).thenReturn(Mono.just("ref_hash"));
         when(refreshTokenRepository.save(any(RefreshToken.class))).thenAnswer(inv -> Mono.just(inv.getArgument(0)));

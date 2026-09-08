@@ -1,5 +1,6 @@
 package pe.ask.auth.config;
 
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
@@ -56,7 +57,7 @@ public final class SecurityOutputConfiguration {
     }
 
     @Bean
-    public ECKey ecKey() throws Exception {
+    public ECKey ecKey() throws JOSEException {
         return new ECKeyGenerator(Curve.P_256).keyID(SecurityEnum.KEY_ID.value()).generate();
     }
 

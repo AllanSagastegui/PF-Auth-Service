@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -89,7 +88,7 @@ class ForgotPasswordUseCaseTest {
         when(tokenGenerator.hashToken("reset_raw")).thenReturn(Mono.just("reset_hash"));
         when(idGenerator.nextId()).thenReturn(Mono.just(UUID.randomUUID()));
         when(oneTimeTokenRepository.save(any())).thenReturn(Mono.empty());
-        when(notificationPort.sendPasswordResetEmail(eq("user@example.com"), eq("reset_raw"))).thenReturn(Mono.empty());
+        when(notificationPort.sendPasswordResetEmail("user@example.com", "reset_raw")).thenReturn(Mono.empty());
 
         StepVerifier.create(useCase.forgotPassword(cmd))
                 .expectNextMatches(res -> res.message().contains("If the email is associated"))

@@ -28,6 +28,7 @@ public final class OutboxMessageEntity implements Persistable<UUID> {
     public OutboxMessageEntity() {
     }
 
+    @SuppressWarnings("java:S107")
     public OutboxMessageEntity(
             UUID id,
             String aggregateType,

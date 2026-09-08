@@ -26,7 +26,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.UUID;
 
 @UseCase
 public final class LoginUseCase implements LoginInputPort {

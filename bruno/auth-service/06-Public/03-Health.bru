@@ -1,0 +1,15 @@
+meta {
+  name: Health Check Actuator
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/actuator/health
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}

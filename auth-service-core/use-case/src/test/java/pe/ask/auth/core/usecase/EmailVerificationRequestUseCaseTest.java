@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -128,7 +127,7 @@ class EmailVerificationRequestUseCaseTest {
 
         when(clockPort.now()).thenReturn(Mono.just(now));
         when(userRepository.findByCanonicalEmail("pending@example.com")).thenReturn(Mono.just(pendingUser));
-        when(oneTimeTokenRepository.revokeByUserIdAndType(eq(userId), eq(OneTimeTokenType.EMAIL_VERIFICATION), eq(now)))
+        when(oneTimeTokenRepository.revokeByUserIdAndType(userId, OneTimeTokenType.EMAIL_VERIFICATION, now))
                 .thenReturn(Mono.empty());
         when(tokenGenerator.generateSecureToken()).thenReturn(Mono.just("new_raw_token"));
         when(tokenGenerator.hashToken("new_raw_token")).thenReturn(Mono.just("new_hashed_token"));

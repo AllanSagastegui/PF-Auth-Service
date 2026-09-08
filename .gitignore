@@ -3,9 +3,8 @@
 
 # Build outputs
 build/
-out/
-target/
-bin/
+/target/
+/bin/
 
 # Agents
 .agents/
@@ -40,11 +39,11 @@ replay_pid*
 # Local Gradle configuration
 gradle-local.properties
 
-# DO NOT IGNORE:
-# gradlew
-# gradlew.bat
-# gradle/wrapper/gradle-wrapper.jar
-# gradle/wrapper/gradle-wrapper.properties
+# Gradle Wrapper must always be committed
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
 
 .idea/
 *.iml
@@ -149,7 +148,6 @@ docker-data/
 # Container runtime files
 *.pid
 
-
 logs/
 log/
 
@@ -232,10 +230,6 @@ pnpm-debug.log*
 
 # Local Copilot workspace data
 .copilot/
-
-# ============================================================
-# Misc
-# ============================================================
 
 *.patch
 *.diff
